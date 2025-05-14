@@ -3,11 +3,9 @@
  * Главный файл сервера для приложения фитнес-записи
  */
 
-// Импорт необходимых модулей
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const mongoose = require('mongoose');
 
 // Импорт маршрутов
 const authRoutes = require('./routes/authRoutes');
@@ -17,35 +15,29 @@ const contentRoutes = require('./routes/contentRoutes');
 // Импорт промежуточного ПО
 const { authenticateJWT } = require('./middleware/auth');
 
-// Импорт конфигурации базы данных
-const dbConfig = require('./config/db');
+// Импорт и подключение базы данных
+const db = require('./config/db');
 
-// Инициализация Express приложения
+// Проверка подключения к БД
+db.getConnection((err, connection) => {
+    if (err) {
+        console.error('Ошибка подключения к MySQL:', err.message);
+        process.exit(1);
+    }
+    console.log('Подключено к базе данных MySQL');
+    connection.release();
+});
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Настройка промежуточного ПО
+// Настройка middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Подключение к базе данных MongoDB
-mongoose.connect(dbConfig.url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false
-})
-.then(() => {
-    console.log('Подключение к базе данных установлено');
-})
-.catch(err => {
-    console.error('Ошибка подключения к базе данных:', err);
-    process.exit(1);
-});
-
-// Настройка заголовков безопасности
+// Безопасность
 app.use((req, res, next) => {
     res.header('X-Content-Type-Options', 'nosniff');
     res.header('X-Frame-Options', 'DENY');
@@ -54,12 +46,12 @@ app.use((req, res, next) => {
     next();
 });
 
-// API маршруты
+// Подключение маршрутов
 app.use('/api/auth', authRoutes);
-app.use('/api/booking', authenticateJWT, bookingRoutes); // Требуется авторизация
+app.use('/api/booking', authenticateJWT, bookingRoutes);
 app.use('/api/content', contentRoutes);
 
-// Обработка запросов к статическим страницам (SPA-подход)
+// SPA fallback (если нет совпадений по маршрутам)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
@@ -76,18 +68,9 @@ app.use((err, req, res, next) => {
 
 // Запуск сервера
 app.listen(PORT, () => {
-    console.log(`Сервер запущен на порту ${PORT}`);
-    console.log(`Режим: ${process.env.NODE_ENV || 'development'}`);
-    console.log('Для остановки сервера нажмите Ctrl+C');
+    console.log(`🚀 Сервер запущен на порту ${PORT}`);
+    console.log(`🌐 Режим: ${process.env.NODE_ENV || 'development'}`);
+    console.log('✋ Для остановки сервера нажмите Ctrl+C');
 });
 
-// Обработка сигналов завершения процесса
-process.on('SIGINT', () => {
-    console.log('Сервер остановлен');
-    mongoose.connection.close(() => {
-        console.log('Соединение с базой данных закрыто');
-        process.exit(0);
-    });
-});
-
-module.exports = app; // Экспорт для тестирования
+module.exports = app;
