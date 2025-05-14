@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitApp - Запись на тренировки</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <div class="logo">
+                <h1>FitApp</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html" class="active">Главная</a></li>
+                    <li><a href="pages/trainers.html">Тренеры</a></li>
+                    <li><a href="pages/exercises.html">Упражнения</a></li>
+                    <li><a href="pages/nutrition.html">Питание</a></li>
+                    <li><a href="pages/auth.html" class="btn-login">Войти</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Запись на тренировки онлайн</h2>
+                <p>Удобный сервис для записи на тренировки, информация о тренерах и упражнениях</p>
+                <a href="#booking" class="btn btn-primary">Записаться на тренировку</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Наши преимущества</h2>
+            <div class="features-grid">
+                <div class="feature-box">
+                    <i class="fas fa-calendar-check"></i>
+                    <h3>Удобное расписание</h3>
+                    <p>Выбирайте удобное время для тренировок</p>
+                </div>
+                <div class="feature-box">
+                    <i class="fas fa-user-friends"></i>
+                    <h3>Опытные тренеры</h3>
+                    <p>Профессиональные тренеры с большим опытом</p>
+                </div>
+                <div class="feature-box">
+                    <i class="fas fa-dumbbell"></i>
+                    <h3>Разнообразные тренировки</h3>
+                    <p>Индивидуальные и групповые программы</p>
+                </div>
+                <div class="feature-box">
+                    <i class="fas fa-apple-alt"></i>
+                    <h3>Советы по питанию</h3>
+                    <p>Рекомендации для правильного питания</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="booking" class="booking">
+        <div class="container">
+            <h2 class="section-title">Запись на тренировку</h2>
+            <p class="section-description">Выберите тренера и удобное время для вашей тренировки</p>
+            
+            <div class="booking-container">
+                <div class="trainer-select">
+                    <h3>Выберите тренера</h3>
+                    <div class="trainers-list">
+                        <!-- Здесь будут динамически загружаться тренеры из JS -->
+                        <p>Загрузка тренеров...</p>
+                    </div>
+                </div>
+                
+                <div class="time-select">
+                    <h3>Выберите время</h3>
+                    <div class="calendar">
+                        <!-- Здесь будет календарь, реализованный через JS -->
+                        <p>Загрузка календаря...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="booking-action">
+                <button class="btn btn-primary book-btn" disabled>Записаться</button>
+                <p class="login-notice">Для записи на тренировку необходимо <a href="pages/auth.html">войти в аккаунт</a></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="popular-exercises">
+        <div class="container">
+            <h2 class="section-title">Популярные упражнения</h2>
+            <div class="exercises-grid">
+                <!-- Здесь будут динамически загружаться упражнения из JS -->
+                <div class="exercise-card">
+                    <div class="exercise-img">
+                        <img src="assets/images/placeholder-exercise.jpg" alt="Упражнение">
+                    </div>
+                    <div class="exercise-info">
+                        <h3>Приседания</h3>
+                        <p>Группа мышц: Ноги</p>
+                        <a href="pages/exercises.html#squat" class="btn btn-sm">Подробнее</a>
+                    </div>
+                </div>
+                <div class="exercise-card">
+                    <div class="exercise-img">
+                        <img src="assets/images/placeholder-exercise.jpg" alt="Упражнение">
+                    </div>
+                    <div class="exercise-info">
+                        <h3>Отжимания</h3>
+                        <p>Группа мышц: Грудь, Трицепс</p>
+                        <a href="pages/exercises.html#pushup" class="btn btn-sm">Подробнее</a>
+                    </div>
+                </div>
+                <div class="exercise-card">
+                    <div class="exercise-img">
+                        <img src="assets/images/placeholder-exercise.jpg" alt="Упражнение">
+                    </div>
+                    <div class="exercise-info">
+                        <h3>Планка</h3>
+                        <p>Группа мышц: Кор, Пресс</p>
+                        <a href="pages/exercises.html#plank" class="btn btn-sm">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+            <div class="view-more">
+                <a href="pages/exercises.html" class="btn btn-secondary">Смотреть все упражнения</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>FitApp</h2>
+                    <p>Удобный сервис для записи на тренировки</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Навигация</h3>
+                    <ul>
+                        <li><a href="index.html">Главная</a></li>
+                        <li><a href="pages/trainers.html">Тренеры</a></li>
+                        <li><a href="pages/exercises.html">Упражнения</a></li>
+                        <li><a href="pages/nutrition.html">Питание</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Контакты</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> г. Киев, ул. Спортивная, 10</p>
+                    <p><i class="fas fa-phone"></i> +380 123 456 789</p>
+                    <p><i class="fas fa-envelope"></i> info@fitapp.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FitApp. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/booking.js"></script>
+</body>
+</html>
