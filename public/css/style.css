@@ -433,11 +433,17 @@ ul {
 
 .auth-form {
     margin-top: 20px;
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
 }
 
 .form-group {
     margin-bottom: 20px;
 }
+
 
 .form-group label {
     display: block;
@@ -540,6 +546,16 @@ ul {
 .trainer-book {
     display: block;
     text-align: center;
+}
+
+.modal {
+    display: none;
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
 }
 
 /* Стили для страницы упражнений */
@@ -671,7 +687,7 @@ ul {
 }
 
 .nutrition-calculator {
-    max-width: 600px;
+    max-width: 700px;
     margin: 0 auto;
     background-color: white;
     padding: 30px;
@@ -699,6 +715,7 @@ ul {
 
     .exercise-details {
         flex-direction: column;
+        justify-content: space-between;
     }
 
     .exercise-gif {

@@ -128,8 +128,7 @@ function updateUIForLoggedInUser(user) {
 function updateUIForLoggedOutUser() {
     const loginBtn = document.querySelector('.btn-login');
     if (loginBtn) {
-        loginBtn.textContent = 'Войти';
-        loginBtn.href = 'pages/auth.html';
+        loginBtn.textContent = 'Увійти';
     }
     
     // Обновление блока записи на тренировку

@@ -3,41 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitApp - Упражнения</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>FitApp - Вправи</title>
+        <link rel="stylesheet" href="../css/style.css">
     <!-- Добавляем шрифт Font Awesome для иконок -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <!-- Шапка сайта -->
-    <header class="app-header">
+        <header class="main-header">
         <div class="container">
             <div class="logo">
-                <a href="../index.html">
-                    <img src="../assets/images/logo.png" alt="FitApp">
-                    <span>FitApp</span>
-                </a>
+                <a href="../index.html"><h1>FitApp</h1></a>
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="../index.html">Главная</a></li>
-                    <li><a href="exercises.html" class="active">Упражнения</a></li>
-                    <li><a href="trainers.html">Тренеры</a></li>
-                    <li><a href="booking.html">Тренировки</a></li>
-                    <li><a href="nutrition.html">Питание</a></li>
+                    <li><a href="../index.html">Головна</a></li>
+                    <li><a href="trainers.html">Тренери</a></li>
+                    <li><a href="exercises.html" class="active">Вправи</a></li>
+                    <li><a href="nutrition.html">Харчування</a></li>
+                    <li><a href="auth.html" class="btn-login">Увійти</a></li>
                 </ul>
             </nav>
-            <div class="user-menu">
-                <div class="user-menu-btn">
-                    <span class="user-name">Гость</span>
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <div class="user-dropdown">
-                    <a href="auth.html" class="guest-item">Войти</a>
-                    <a href="auth.html#register" class="guest-item">Регистрация</a>
-                    <a href="profile.html" class="auth-item">Профиль</a>
-                    <a href="#" class="auth-item" id="logout-btn">Выйти</a>
-                </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
             </div>
         </div>
     </header>
@@ -46,14 +33,14 @@
     <main class="main-content">
         <div class="container">
             <section class="page-header">
-                <h1>Упражнения</h1>
-                <p>Каталог упражнений для разных групп мышц с подробным описанием техники выполнения</p>
+                <h1>Вправи</h1>
+                <p>Каталог вправ для різних груп м'язів з детальним описом техніки виконання</p>
             </section>
 
             <!-- Фильтры -->
             <section class="exercises-filters">
                 <div class="search-box">
-                    <input type="text" id="exercise-search" placeholder="Поиск упражнений...">
+                    <input type="text" id="exercise-search" placeholder="Пошук вправ...">
                     <i class="fas fa-search"></i>
                 </div>
                 <div class="categories-filter">
@@ -67,15 +54,15 @@
                     <!-- Сюда будут добавлены карточки упражнений -->
                     <div class="loading">
                         <span class="loader"></span>
-                        <p>Загрузка упражнений...</p>
+                        <p>Завантаження вправ...</p>
                     </div>
                 </div>
             </section>
 
             <!-- Секция Избранных упражнений (только для авторизованных) -->
             <section class="favorites-section auth-content">
-                <h2>Избранные упражнения</h2>
-                <p>Здесь сохраняются упражнения, которые вы добавили в избранное</p>
+                <h2>Улюблені вправи</h2>
+                <p>Тут зберігаються вправи, які ви додали до улюблених</p>
                 <div class="favorites-container">
                     <!-- Сюда будут добавлены избранные упражнения -->
                 </div>
@@ -83,44 +70,31 @@
         </div>
     </main>
 
-    <!-- Подвал сайта -->
-    <footer class="app-footer">
+    <footer class="main-footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <img src="../assets/images/logo.png" alt="FitApp">
-                    <span>FitApp</span>
+                    <h2>FitApp</h2>
+                    <p>Зручний сервіс для запису на тренування</p>
                 </div>
-                <div class="footer-nav">
-                    <div class="footer-nav-column">
-                        <h3>Навигация</h3>
-                        <ul>
-                            <li><a href="../index.html">Главная</a></li>
-                            <li><a href="exercises.html">Упражнения</a></li>
-                            <li><a href="trainers.html">Тренеры</a></li>
-                            <li><a href="booking.html">Тренировки</a></li>
-                            <li><a href="nutrition.html">Питание</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-nav-column">
-                        <h3>Аккаунт</h3>
-                        <ul>
-                            <li><a href="auth.html">Вход</a></li>
-                            <li><a href="auth.html#register">Регистрация</a></li>
-                            <li><a href="profile.html">Профиль</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-nav-column">
-                        <h3>Связь с нами</h3>
-                        <ul>
-                            <li><a href="#"><i class="fas fa-envelope"></i> support@fitapp.ru</a></li>
-                            <li><a href="#"><i class="fas fa-phone"></i> +7 (999) 123-45-67</a></li>
-                        </ul>
-                    </div>
+                <div class="footer-links">
+                    <h3>Навігація</h3>
+                    <ul>
+                        <li><a href="../index.html">Головна</a></li>
+                        <li><a href="trainers.html">Тренери</a></li>
+                        <li><a href="exercises.html">Вправи</a></li>
+                        <li><a href="nutrition.html">Харчування</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Контакти</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> м. Київ, вул. Спортивна, 10</p>
+                    <p><i class="fas fa-phone"></i> +380 123 456 789</p>
+                    <p><i class="fas fa-envelope"></i> info@fitapp.com</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2023 FitApp. Все права защищены.</p>
+                <p>&copy; 2025 FitApp. Усі права захищені.</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-vk"></i></a>
                     <a href="#"><i class="fab fa-telegram"></i></a>
