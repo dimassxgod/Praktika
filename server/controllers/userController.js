@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const queries = require('../models/queries');
 
 // Регистрация нового пользователя

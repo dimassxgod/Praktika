@@ -49,5 +49,6 @@ const getBookingsByUser = async (req, res) => {
 module.exports = {
   bookTraining,
   cancelBooking,
-  getBookingsByUser
+  getBookingsByUser,
+  getAllTrainings
 };
