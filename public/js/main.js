@@ -4,7 +4,7 @@
  */
 
 // Глобальные переменные
-const API_BASE_URL = 'http://localhost:3000/api'; // URL для API запросов
+const API_BASE_URL = window.location.origin + '/api'; // Динамический URL для API
 let currentUser = null; // Текущий пользователь
 
 // Проверка авторизации при загрузке страницы
@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initApp();
     setupMobileMenu();
     checkAuth();
+    loadPopularExercises();
 });
 
 /**
@@ -23,11 +24,31 @@ function initApp() {
     // Заполнение актуальным годом в футере
     updateFooterYear();
     
-    // Проверка наличия параметров в URL (для обработки возврата после авторизации)
+    // Проверка наличия параметров в URL
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('auth') && urlParams.get('auth') === 'success') {
         showNotification('Вы успешно авторизовались!', 'success');
+        // Очистка URL
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
+    
+    // Обработчик для плавного скролла
+    setupSmoothScroll();
+}
+
+/**
+ * Настройка плавного скролла для якорных ссылок
+ */
+function setupSmoothScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                smoothScrollTo(target, 80);
+            }
+        });
+    });
 }
 
 /**
@@ -37,7 +58,7 @@ function setupMobileMenu() {
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const mainNav = document.querySelector('.main-nav');
     
-    if (mobileMenuBtn) {
+    if (mobileMenuBtn && mainNav) {
         mobileMenuBtn.addEventListener('click', () => {
             mainNav.classList.toggle('active');
             
@@ -64,34 +85,41 @@ function setupMobileMenu() {
                 }
             });
         });
+        
+        // Закрытие меню при клике вне его
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuBtn.contains(e.target) && !mainNav.contains(e.target)) {
+                mainNav.classList.remove('active');
+                const icon = mobileMenuBtn.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
     }
 }
 
 /**
  * Проверка авторизации пользователя
  */
-function checkAuth() {
+async function checkAuth() {
     const token = localStorage.getItem('fitapp_token');
     
     if (token) {
-        // Получение данных текущего пользователя
-        fetchWithAuth(`${API_BASE_URL}/users/me`)
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
+        try {
+            const response = await fetchWithAuth(`${API_BASE_URL}/auth/me`);
+            
+            if (response.ok) {
+                const userData = await response.json();
+                currentUser = userData.user || userData;
+                updateUIForLoggedInUser(currentUser);
+            } else {
                 throw new Error('Ошибка авторизации');
-            })
-            .then(user => {
-                currentUser = user;
-                updateUIForLoggedInUser(user);
-            })
-            .catch(error => {
-                console.error('Ошибка проверки авторизации:', error);
-                // При ошибке удаляем токен
-                localStorage.removeItem('fitapp_token');
-                updateUIForLoggedOutUser();
-            });
+            }
+        } catch (error) {
+            console.error('Ошибка проверки авторизации:', error);
+            localStorage.removeItem('fitapp_token');
+            updateUIForLoggedOutUser();
+        }
     } else {
         updateUIForLoggedOutUser();
     }
@@ -99,14 +127,14 @@ function checkAuth() {
 
 /**
  * Обновление интерфейса для авторизованного пользователя
- * @param {Object} user - Данные пользователя
  */
 function updateUIForLoggedInUser(user) {
     // Обновление кнопки входа в меню
     const loginBtn = document.querySelector('.btn-login');
     if (loginBtn) {
-        loginBtn.textContent = user.name || 'Личный кабинет';
+        loginBtn.textContent = user.name || user.firstName || 'Личный кабинет';
         loginBtn.href = 'pages/profile.html';
+        loginBtn.classList.add('logged-in');
     }
     
     // Обновление блока записи на тренировку
@@ -119,6 +147,7 @@ function updateUIForLoggedInUser(user) {
     
     if (bookBtn) {
         bookBtn.disabled = false;
+        bookBtn.addEventListener('click', handleBookingClick);
     }
 }
 
@@ -129,6 +158,8 @@ function updateUIForLoggedOutUser() {
     const loginBtn = document.querySelector('.btn-login');
     if (loginBtn) {
         loginBtn.textContent = 'Увійти';
+        loginBtn.href = 'pages/auth.html';
+        loginBtn.classList.remove('logged-in');
     }
     
     // Обновление блока записи на тренировку
@@ -141,7 +172,65 @@ function updateUIForLoggedOutUser() {
     
     if (bookBtn) {
         bookBtn.disabled = true;
+        bookBtn.removeEventListener('click', handleBookingClick);
     }
+}
+
+/**
+ * Обработчик клика по кнопке записи
+ */
+function handleBookingClick() {
+    if (!currentUser) {
+        showNotification('Необходимо войти в систему', 'warning');
+        return;
+    }
+    
+    // Логика записи на тренировку
+    showNotification('Функция записи в разработке', 'info');
+}
+
+/**
+ * Загрузка популярных упражнений
+ */
+async function loadPopularExercises() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/content/exercises/popular`);
+        
+        if (response.ok) {
+            const exercises = await response.json();
+            renderPopularExercises(exercises);
+        } else {
+            console.warn('Не удалось загрузить популярные упражнения');
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки упражнений:', error);
+    }
+}
+
+/**
+ * Отображение популярных упражнений
+ */
+function renderPopularExercises(exercises) {
+    const exercisesGrid = document.querySelector('.exercises-grid');
+    
+    if (!exercisesGrid || !exercises || exercises.length === 0) {
+        return;
+    }
+    
+    exercisesGrid.innerHTML = exercises.map(exercise => `
+        <div class="exercise-card">
+            <div class="exercise-img">
+                <img src="${exercise.image || 'assets/images/exercises/default.jpg'}" 
+                     alt="${exercise.name}" 
+                     onerror="this.src='assets/images/exercises/default.jpg'">
+            </div>
+            <div class="exercise-info">
+                <h3>${exercise.name}</h3>
+                <p>Група м'язів: ${exercise.muscleGroup}</p>
+                <a href="pages/exercises.html#${exercise.slug}" class="btn btn-sm">Докладніше</a>
+            </div>
+        </div>
+    `).join('');
 }
 
 /**
@@ -150,34 +239,36 @@ function updateUIForLoggedOutUser() {
 function logout() {
     localStorage.removeItem('fitapp_token');
     currentUser = null;
+    showNotification('Вы вышли из системы', 'success');
     
     // Перенаправление на главную страницу
-    window.location.href = '/';
+    setTimeout(() => {
+        window.location.href = '/';
+    }, 1000);
 }
 
 /**
  * Выполнение запроса с авторизацией
- * @param {string} url - URL запроса
- * @param {Object} options - Опции запроса
- * @returns {Promise} - Promise с результатом запроса
  */
 function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem('fitapp_token');
     
+    const defaultOptions = {
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    };
+    
     if (token) {
-        options.headers = {
-            ...options.headers,
-            'Authorization': `Bearer ${token}`
-        };
+        defaultOptions.headers.Authorization = `Bearer ${token}`;
     }
     
-    return fetch(url, options);
+    return fetch(url, { ...defaultOptions, ...options });
 }
 
 /**
  * Показ уведомления
- * @param {string} message - Текст уведомления
- * @param {string} type - Тип уведомления (success, error, warning)
  */
 function showNotification(message, type = 'info') {
     // Проверяем, существует ли уже контейнер для уведомлений
@@ -187,37 +278,57 @@ function showNotification(message, type = 'info') {
     if (!notificationsContainer) {
         notificationsContainer = document.createElement('div');
         notificationsContainer.className = 'notifications-container';
+        notificationsContainer.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        `;
         document.body.appendChild(notificationsContainer);
-        
-        // Стили для контейнера уведомлений
-        notificationsContainer.style.position = 'fixed';
-        notificationsContainer.style.top = '20px';
-        notificationsContainer.style.right = '20px';
-        notificationsContainer.style.zIndex = '1000';
     }
     
     // Создаем элемент уведомления
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <span>${message}</span>
-            <button class="notification-close">&times;</button>
-        </div>
+    
+    const colors = {
+        success: '#4CAF50',
+        error: '#F44336',
+        warning: '#FFC107',
+        info: '#2196F3'
+    };
+    
+    notification.style.cssText = `
+        background-color: ${colors[type] || colors.info};
+        color: white;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+        line-height: 1.4;
     `;
     
-    // Стили для уведомления
-    notification.style.backgroundColor = type === 'success' ? '#4CAF50' : 
-                                       type === 'error' ? '#F44336' :
-                                       type === 'warning' ? '#FFC107' : '#2196F3';
-    notification.style.color = 'white';
-    notification.style.padding = '15px';
-    notification.style.marginBottom = '10px';
-    notification.style.borderRadius = '4px';
-    notification.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-    notification.style.minWidth = '300px';
-    notification.style.opacity = '0';
-    notification.style.transition = 'opacity 0.3s ease';
+    notification.innerHTML = `
+        <span>${message}</span>
+        <button class="notification-close" style="
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 15px;
+            opacity: 0.8;
+        ">&times;</button>
+    `;
     
     // Добавляем уведомление в контейнер
     notificationsContainer.appendChild(notification);
@@ -225,19 +336,21 @@ function showNotification(message, type = 'info') {
     // Анимация появления
     setTimeout(() => {
         notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
     }, 10);
     
     // Добавляем обработчик для кнопки закрытия
     const closeBtn = notification.querySelector('.notification-close');
-    closeBtn.style.border = 'none';
-    closeBtn.style.background = 'transparent';
-    closeBtn.style.color = 'white';
-    closeBtn.style.fontSize = '20px';
-    closeBtn.style.cursor = 'pointer';
-    closeBtn.style.float = 'right';
-    
     closeBtn.addEventListener('click', () => {
         closeNotification(notification);
+    });
+    
+    // Добавляем hover эффект для кнопки закрытия
+    closeBtn.addEventListener('mouseenter', () => {
+        closeBtn.style.opacity = '1';
+    });
+    closeBtn.addEventListener('mouseleave', () => {
+        closeBtn.style.opacity = '0.8';
     });
     
     // Автоматическое закрытие через 5 секунд
@@ -248,13 +361,15 @@ function showNotification(message, type = 'info') {
 
 /**
  * Закрытие уведомления
- * @param {HTMLElement} notification - Элемент уведомления
  */
 function closeNotification(notification) {
     notification.style.opacity = '0';
+    notification.style.transform = 'translateX(100%)';
     
     setTimeout(() => {
-        notification.remove();
+        if (notification.parentNode) {
+            notification.remove();
+        }
         
         // Проверяем, остались ли еще уведомления
         const notificationsContainer = document.querySelector('.notifications-container');
@@ -271,42 +386,33 @@ function updateFooterYear() {
     const yearElement = document.querySelector('.footer-bottom p');
     if (yearElement) {
         const currentYear = new Date().getFullYear();
-        yearElement.innerHTML = `&copy; ${currentYear} FitApp. Все права защищены.`;
+        yearElement.innerHTML = `&copy; ${currentYear} FitApp. Усі права захищені.`;
     }
 }
 
 /**
  * Загрузка данных с API
- * @param {string} endpoint - Конечная точка API
- * @param {boolean} requireAuth - Требуется ли авторизация
- * @returns {Promise} - Promise с данными
  */
-function loadData(endpoint, requireAuth = false) {
-    const url = `${API_BASE_URL}/${endpoint}`;
-    
-    if (requireAuth) {
-        return fetchWithAuth(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
-                }
-                return response.json();
-            });
-    } else {
-        return fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
-                }
-                return response.json();
-            });
+async function loadData(endpoint, requireAuth = false) {
+    try {
+        const url = `${API_BASE_URL}/${endpoint}`;
+        const response = requireAuth ? 
+            await fetchWithAuth(url) : 
+            await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        throw error;
     }
 }
 
 /**
  * Сглаживание скролла к элементу
- * @param {HTMLElement|string} element - Элемент или его селектор
- * @param {number} offset - Отступ от верха страницы
  */
 function smoothScrollTo(element, offset = 0) {
     if (typeof element === 'string') {
@@ -326,12 +432,13 @@ function smoothScrollTo(element, offset = 0) {
 
 /**
  * Форматирование даты
- * @param {Date|string} date - Дата для форматирования
- * @param {string} format - Формат (default: 'dd.mm.yyyy')
- * @returns {string} - Отформатированная дата
  */
 function formatDate(date, format = 'dd.mm.yyyy') {
     date = new Date(date);
+    
+    if (isNaN(date.getTime())) {
+        return 'Неверная дата';
+    }
     
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -353,18 +460,14 @@ function formatDate(date, format = 'dd.mm.yyyy') {
 
 /**
  * Проверка валидности электронной почты
- * @param {string} email - Адрес электронной почты
- * @returns {boolean} - Результат проверки
  */
 function isValidEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
 }
 
 /**
  * Проверка валидности пароля
- * @param {string} password - Пароль
- * @returns {boolean} - Результат проверки
  */
 function isValidPassword(password) {
     // Минимум 8 символов, содержит буквы и цифры
@@ -372,16 +475,44 @@ function isValidPassword(password) {
 }
 
 /**
- * Экспорт функций и переменных
+ * Debounce функция для оптимизации событий
+ */
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+/**
+ * Экспорт функций и переменных для глобального использования
  */
 window.FitApp = {
+    // Основные функции
     logout,
     showNotification,
     loadData,
     smoothScrollTo,
+    checkAuth,
+    
+    // Утилиты
     formatDate,
     isValidEmail,
     isValidPassword,
     fetchWithAuth,
-    checkAuth
+    debounce,
+    
+    // Переменные
+    get currentUser() {
+        return currentUser;
+    },
+    
+    get apiBaseUrl() {
+        return API_BASE_URL;
+    }
 };
