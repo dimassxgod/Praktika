@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateJWT } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth'); // Изменено с authenticateJWT на authenticateToken
 const { getUser, getWorkouts } = require('../controllers/profileController');
 
 // Получить данные пользователя
-router.get('/user', authenticateJWT, getUser);
+router.get('/user', authenticateToken, getUser);
 
 // Получить список тренировок
-router.get('/workouts', authenticateJWT, getWorkouts);
+router.get('/workouts', authenticateToken, getWorkouts);
 
 module.exports = router;

@@ -18,8 +18,8 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 
-// Импорт промежуточного ПО
-const { authenticateJWT } = require('./middleware/auth');
+// Импорт промежуточного ПО - ИСПРАВЛЕНО: authenticateJWT -> authenticateToken
+const { authenticateToken } = require('./middleware/auth');
 
 const { db, client } = require('./config/db');
 
@@ -66,11 +66,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Статические файлы
 app.use(express.static(path.join(__dirname, '../public')));
 
-// API маршруты
+// API маршруты - ИСПРАВЛЕНО: authenticateJWT -> authenticateToken
 app.use('/api/auth', authRoutes);
-app.use('/api/booking', authenticateJWT, bookingRoutes);
+app.use('/api/booking', authenticateToken, bookingRoutes);
 app.use('/api/content', contentRoutes);
-app.use('/api/profile', authenticateJWT, profileRoutes);
+app.use('/api/profile', authenticateToken, profileRoutes);
 
 // Здоровье API
 app.get('/api/health', (req, res) => {
