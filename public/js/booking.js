@@ -81,13 +81,6 @@ function loadTrainers() {
                     experience: 4,
                     photo: '../assets/images/trainer3.jpg'
                 },
-                {
-                    id: 4,
-                    name: 'Анна Кузнецова',
-                    specialty: 'Кардиотренировки',
-                    experience: 6,
-                    photo: '../assets/images/trainer4.jpg'
-                }
             ];
             
             return trainers;

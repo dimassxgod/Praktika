@@ -1,34 +1,55 @@
 // server/controllers/profileController.js
-const db = require('../config/db');
+const { db } = require('../config/db');
+const { ObjectId } = require('mongodb');
 
-// Получить данные пользователя
-exports.getUser = (req, res) => {
-    const userId = req.user.id;
-
-    db.query('SELECT name, email, age FROM users WHERE id = ?', [userId], (err, results) => {
-        if (err) {
-            console.error('Ошибка при получении пользователя:', err);
-            return res.status(500).json({ error: 'Ошибка сервера' });
+async function getUser(req, res) {
+    try {
+        const userId = req.user.id;
+        
+        // Проверяем, что userId является валидным ObjectId
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: 'Неверный ID пользователя' });
         }
 
-        if (results.length === 0) {
+        const user = await db.collection('users').findOne(
+            { _id: new ObjectId(userId) },
+            { projection: { name: 1, email: 1, age: 1 } }
+        );
+
+        if (!user) {
             return res.status(404).json({ error: 'Пользователь не найден' });
         }
 
-        res.json(results[0]);
-    });
-};
+        res.json(user);
+    } catch (err) {
+        console.error('Ошибка при получении пользователя:', err);
+        res.status(500).json({ error: 'Ошибка сервера' });
+    }
+}
 
-// Получить список тренировок
-exports.getWorkouts = (req, res) => {
-    const userId = req.user.id;
-
-    db.query('SELECT date, type FROM workouts WHERE user_id = ? ORDER BY date DESC', [userId], (err, results) => {
-        if (err) {
-            console.error('Ошибка при получении тренировок:', err);
-            return res.status(500).json({ error: 'Ошибка сервера' });
+async function getWorkouts(req, res) {
+    try {
+        const userId = req.user.id;
+        
+        // Проверяем, что userId является валидным ObjectId
+        if (!ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: 'Неверный ID пользователя' });
         }
 
-        res.json(results);
-    });
+        const workouts = await db.collection('workouts')
+            .find({ userId: new ObjectId(userId) })
+            .project({ date: 1, type: 1 })
+            .sort({ date: -1 })
+            .toArray();
+
+        res.json(workouts);
+    } catch (err) {
+        console.error('Ошибка при получении тренировок:', err);
+        res.status(500).json({ error: 'Ошибка сервера' });
+    }
+}
+
+module.exports = {
+    getUser,
+    getWorkouts
 };

@@ -21,19 +21,10 @@ const profileRoutes = require('./routes/profileRoutes');
 // Импорт промежуточного ПО
 const { authenticateJWT } = require('./middleware/auth');
 
-// Импорт и подключение базы данных
-const db = require('./config/db');
+const { db, client } = require('./config/db');
 
-// Проверка подключения к БД
-db.getConnection((err, connection) => {
-    if (err) {
-        console.error('Ошибка подключения к MySQL:', err.message);
-        process.exit(1);
-    }
-    console.log('✅ Подключено к базе данных MySQL');
-    connection.release();
-});
-
+// Удалите проверку подключения к MySQL, т.к. MongoDB подключится асинхронно
+console.log('✅ Подключение к MongoDB инициализировано');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -119,14 +110,11 @@ app.use((err, req, res, next) => {
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-    console.log('SIGTERM получен. Закрываем HTTP сервер...');
-    server.close(() => {
-        console.log('HTTP сервер закрыт.');
-        db.end(() => {
-            console.log('База данных отключена.');
-            process.exit(0);
-        });
-    });
+  server.close(async () => {
+    await client.close();
+    console.log('MongoDB соединение закрыто.');
+    process.exit(0);
+  });
 });
 
 // Запуск сервера
