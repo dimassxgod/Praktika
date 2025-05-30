@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Профиль пользователя</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Личный кабинет</h1>
+    <nav>
+      <a href="../index.html">🏠 Главная</a>
+      <a href="./exercises.html">🏋 Упражнения</a>
+      <a href="./nutrition.html">🍎 Питание</a>
+      <a href="./trainers.html">👨‍🏫 Тренеры</a>
+      <a href="./auth.html">🔓 Выйти</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Блок пользователя -->
+    <section class="card profile-info">
+      <h2>👤 Личная информация</h2>
+      <p><strong>Имя:</strong> <span id="user-name">Загрузка...</span></p>
+      <p><strong>Email:</strong> <span id="user-email">Загрузка...</span></p>
+      <p><strong>Возраст:</strong> <span id="user-age">Загрузка...</span></p>
+    </section>
+
+    <!-- Блок тренера -->
+    <section class="card trainer-info">
+      <h2>👨‍🏫 Персональный тренер</h2>
+      <p><strong>Имя:</strong> <span id="trainer-name">Алексей Смирнов</span></p>
+      <p><strong>Опыт:</strong> 5 лет</p>
+      <p><strong>Специализация:</strong> Силовой тренинг, коррекция осанки</p>
+    </section>
+
+    <!-- Блок тренировок -->
+    <section class="card workout-info">
+      <h2>📅 Ближайшие тренировки</h2>
+      <ul id="workout-list">
+        <li>Загрузка...</li>
+      </ul>
+    </section>
+
+    <!-- Блок прогресса -->
+    <section class="card progress-info">
+      <h2>📊 Мой прогресс</h2>
+      <p><strong>Вес:</strong> <span id="weight">72 кг</span></p>
+      <p><strong>Присед:</strong> 90 кг</p>
+      <p><strong>Жим лёжа:</strong> 75 кг</p>
+      <p><strong>Становая:</strong> 100 кг</p>
+    </section>
+
+    <!-- Блок рекомендаций -->
+    <section class="card nutrition-info">
+      <h2>🍽 Рекомендации по питанию</h2>
+      <ul>
+        <li>Соблюдать режим питания: 4-5 приёмов пищи</li>
+        <li>Пить минимум 2 литра воды в день</li>
+        <li>Добавить белок в каждый приём пищи</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Gym App</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/profile.js"></script>
+</body>
+</html>

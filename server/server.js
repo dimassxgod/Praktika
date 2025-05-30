@@ -11,6 +11,7 @@ const path = require('path');
 const authRoutes = require('./routes/authRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const contentRoutes = require('./routes/contentRoutes');
+const profileRoutes = require('./routes/profileRoutes'); // Новый
 
 // Импорт промежуточного ПО
 const { authenticateJWT } = require('./middleware/auth');
@@ -24,7 +25,7 @@ db.getConnection((err, connection) => {
         console.error('Ошибка подключения к MySQL:', err.message);
         process.exit(1);
     }
-    console.log('Подключено к базе данных MySQL');
+    console.log('✅ Подключено к базе данных MySQL');
     connection.release();
 });
 
@@ -50,6 +51,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/booking', authenticateJWT, bookingRoutes);
 app.use('/api/content', contentRoutes);
+app.use('/api/profile', authenticateJWT, profileRoutes); // Новый маршрут
 
 // SPA fallback (если нет совпадений по маршрутам)
 app.get('*', (req, res) => {
