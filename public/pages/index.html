@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FitApp - Запис на тренування</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;1,200&display=swap" rel="stylesheet">
     <!-- Font Awesome для иконок -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -67,6 +70,41 @@
         </div>
     </section>
 
+        <section class="plans">
+        <div class="container">
+            <div class="plans-content">
+                <p class="plans-gigatitle">ПРИЄДНУЙТЕСЬ ДО НАШОГО ЧЛЕНСТВА</p>
+                <h2 class="plan-title">Наші плани</h2>
+           <div class="plans-grid">
+                <div class="plans-box" style="padding: 80px;">
+                    <i class="fas fa-chess-pawn"></i>
+                    <h3>Одноразове</h3>
+                </div>
+                <div class="plans-box" style="background-color: #3e3e3e;">
+                    <i class="fas fa-chess-knight" style="color:#ECE9E9"></i>
+                    <h2 style="color: white;">7 днів</h2>
+                    <h3 style="color: white;">Тижнева ставка</h3>
+                </div>
+                <div class="plans-box" style="background-color: #77749B;">
+                    <i class="fas fa-chess-bishop" style="color:#ECE9E9"></i>
+                    <h2 style="color: white;">1 місяць</h2>
+                    <h3 style="color: white;">Щомісячна ставка</h3>
+                </div>
+                <div class="plans-box"  style="background-color: #332f64;">
+                    <i class="fas fa-chess-king" style="color:#ECE9E9"></i>
+                    <h2 style="color: white;">6 місяць</h2>
+                    <h3 style="color: white;">Піврічна ставка</h3>
+                </div>
+                <div class="plans-box" style="background-color: #1a1363;">
+                    <i class="	fas fa-chess-queen" style="color:#ECE9E9"></i>
+                    <h2 style="color: white;">1 рік</h2>
+                    <h3 style="color: white;">Річна ставка</h3>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+
     <section id="booking" class="booking">
         <div class="container">
             <h2 class="section-title">Запис на тренування</h2>
@@ -104,37 +142,37 @@
                 <!-- Здесь будут динамически загружаться упражнения из JS -->
                 <div class="exercise-card">
                     <div class="exercise-img">
-                        <img src="assets/images/exercises/squat.jpg" alt="Вправа">
+                        <img src="../assets/images/exercises/squat.jpg" alt="Вправа">
                     </div>
                     <div class="exercise-info">
                         <h3>Присідання</h3>
                         <p>Група м'язів: Ноги</p>
-                        <a href="pages/exercises.html#squat" class="btn btn-sm">Докладніше</a>
+                        <a href="exercises.html#squat" class="btn btn-sm">Докладніше</a>
                     </div>
                 </div>
                 <div class="exercise-card">
                     <div class="exercise-img">
-                        <img src="assets/images/exercises/pushup.jpg" alt="Вправа">
+                        <img src="../assets/images/exercises/pushup.jpg" alt="Вправа">
                     </div>
                     <div class="exercise-info">
                         <h3>Відтискання</h3>
                         <p>Група м'язів: Груди, Трицепс</p>
-                        <a href="pages/exercises.html#pushup" class="btn btn-sm">Докладніше</a>
+                        <a href="exercises.html#pushup" class="btn btn-sm">Докладніше</a>
                     </div>
                 </div>
                 <div class="exercise-card">
                     <div class="exercise-img">
-                        <img src="assets/images/exercises/plank.jpg" alt="Вправа">
+                        <img src="../assets/images/exercises/plank.jpg" alt="Вправа">
                     </div>
                     <div class="exercise-info">
                         <h3>Планка</h3>
                         <p>Група м'язів: Кор, Прес</p>
-                        <a href="pages/exercises.html#plank" class="btn btn-sm">Докладніше/a>
+                        <a href="exercises.html#plank" class="btn btn-sm">Докладніше/a>
                     </div>
                 </div>
             </div>
             <div class="view-more">
-                <a href="pages/exercises.html" class="btn btn-secondary">Дивитись усі вправи</a>
+                <a href="exercises.html" class="btn btn-primary">Дивитись усі вправи</a>
             </div>
         </div>
     </section>

@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FitApp - Тренери</title>
     <link rel="stylesheet" href="../css/style.css">
-    <!-- Font Awesome для иконок -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;1,200&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -163,47 +165,34 @@
 
     <section class="testimonials">
         <div class="container">
-            <h2 class="section-title">Відгуки клієнтів</h2>
-            <div class="testimonials-slider">
-                <div class="testimonial">
-                    <div class="testimonial-content">
-                        <p>"Займаюся з Олександром уже півроку. Результати перевершили мої очікування! Грамотно складена програма та постійна підтримка тренера справді працюють."</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <img src="../assets/images/placeholder-user.jpg" alt="Клиент">
-                        <div>
-                            <h4>Андрій К.</h4>
-                            <p>Клієнт 6 місяців</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="testimonial">
-                    <div class="testimonial-content">
-                        <p>"Олена чудовий інструктор з йоги! Її заняття допомогли мені не лише покращити гнучкість, а й навчитися розслаблятися після важкого робочого дня."</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <img src="../assets/images/placeholder-user.jpg" alt="Клиент">
-                        <div>
-                            <h4>Марія С.</h4>
-                            <p>Клієнт 1 рік</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="testimonial">
-                    <div class="testimonial-content">
-                        <p>"Інтенсивні тренування з Максимом допомогли мені скинути 15 кг за 3 місяці! Його підтримка та мотивація безцінні. Рекомендую всім, хто бажає швидких результатів."</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <img src="../assets/images/placeholder-user.jpg" alt="Клиент">
-                        <div>
-                            <h4>Дмитро В.</h4>
-                            <p>Клієнт 3 місяці</p>
-                        </div>
-                    </div>
-                </div>
+           
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <br><br>
+        <h2 style="margin-bottom: 50px; color: #ECE9E9;">Відгуки</h2>
+        
+        <div class="testimonials" style="display: flex; overflow-x: auto; gap: 30px; padding: 20px 0; scroll-snap-type: x mandatory;">
+            <!-- Testimonial 1 -->
+            <div style="min-width: 300px; background: #ECE9E9; padding: 30px; border-radius: 15px; scroll-snap-align: start;">
+                <img src="../assets/images/users/selfie1.jpg" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 20px;">
+                <p>"Займаюся з Олександром уже півроку. Результати перевершили мої очікування! Грамотно складена програма та постійна підтримка тренера справді працюють."</p>
+                <p style="font-weight: bold;">-Андрій К.</p>
             </div>
+            
+            <!-- Testimonial 2 -->
+            <div style="min-width: 300px; background: #ECE9E9; padding: 30px; border-radius: 15px; scroll-snap-align: start;">
+                <img src="../assets/images/users/selfie2.jpg" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 20px;">
+                <p>"Олена чудовий інструктор з йоги! Її заняття допомогли мені не лише покращити гнучкість, а й навчитися розслаблятися після важкого робочого дня."</p>
+                <p style="font-weight: bold;">-Марія С.</p>
+            </div>
+            
+            <!-- Testimonial 3 -->
+            <div style="min-width: 300px; background: #ECE9E9; padding: 30px; border-radius: 15px; scroll-snap-align: start;">
+                <img src="../assets/images/users/selfie3.jpg" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 20px;">
+                <p>"Інтенсивні тренування з Максимом допомогли мені скинути 15 кг за 3 місяці! Його підтримка та мотивація безцінні. Рекомендую всім, хто бажає швидких результатів."</p>
+                <p style="font-weight: bold;">-Олена В.</p>
+            </div>
+        </div>
+    </div>
         </div>
     </section>
 
@@ -212,7 +201,7 @@
             <div class="join-content">
                 <h2>Стати тренером у нашій команді</h2>
                 <p>Якщо ви професійний тренер і бажаєте приєднатися до команди FitApp, заповніть форму заявки</p>
-                <a href="#join-form" class="btn btn-secondary open-join-form">Подати заявку</a>
+                <a href="#join-form" class="btn btn-primary open-join-form">Подати заявку</a>
             </div>
         </div>
     </section>
