@@ -46,6 +46,16 @@ const getBookingsByUser = async (req, res) => {
   }
 };
 
+const getAllTrainings = async (req, res) => {
+  try {
+    const trainings = await queries.getAllTrainings();
+    res.status(200).json(trainings);
+  } catch (error) {
+    console.error('Ошибка при получении тренировок:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+};
+
 module.exports = {
   bookTraining,
   cancelBooking,

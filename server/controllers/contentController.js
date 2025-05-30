@@ -25,15 +25,7 @@ const addExercise = async (req, res) => {
   }
 };
 
-const getAllTrainings = async (req, res) => {
-  try {
-    const trainings = await queries.getAllTrainings();
-    res.status(200).json(trainings);
-  } catch (error) {
-    console.error('Ошибка при получении тренировок:', error);
-    res.status(500).json({ message: 'Ошибка сервера' });
-  }
-};
+
 // ===== ГРУППЫ МЫШЦ =====
 
 const getAllMuscleGroups = async (req, res) => {
@@ -80,10 +72,34 @@ const addTrainer = async (req, res) => {
   }
 };
 
+// ===== ТРЕНИРОВКИ =====
+
+const getAllTrainings = async (req, res) => {
+  try {
+    const trainings = await queries.getAllTrainings();
+    res.status(200).json(trainings);
+  } catch (error) {
+    console.error('Ошибка при получении тренировок:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+};
+
+const getExercisesByMuscleGroup = async (req, res) => {
+  try {
+    const { muscleGroupId } = req.params;
+    const exercises = await queries.getExercisesByMuscleGroup(muscleGroupId);
+    res.status(200).json(exercises);
+  } catch (error) {
+    console.error('Ошибка при получении упражнений по группе мышц:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+};
+
 module.exports = {
   // Упражнения
   getAllExercises,
   addExercise,
+  getExercisesByMuscleGroup, 
 
   // Группы мышц
   getAllMuscleGroups,
@@ -91,5 +107,8 @@ module.exports = {
 
   // Тренеры
   getAllTrainers,
-  addTrainer
+  addTrainer,
+
+  // Тренировки
+  getAllTrainings
 };

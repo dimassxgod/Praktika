@@ -64,6 +64,16 @@ async function addExercise({ name, description, muscle_group_id, gif_url }) {
   return result.insertId;
 }
 
+async function getExercisesByMuscleGroup(muscleGroupId) {
+  const [rows] = await db.query(`
+    SELECT Exercises.*, MuscleGroups.name AS muscle_group 
+    FROM Exercises
+    LEFT JOIN MuscleGroups ON Exercises.muscle_group_id = MuscleGroups.id
+    WHERE Exercises.muscle_group_id = ?
+  `, [muscleGroupId]);
+  return rows;
+}
+
 // === TRAININGS ===
 
 async function getAllTrainings() {
@@ -119,6 +129,7 @@ module.exports = {
   // Exercises
   getAllExercises,
   addExercise,
+  getExercisesByMuscleGroup,
 
   // Trainings
   getAllTrainings,
