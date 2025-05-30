@@ -4,7 +4,7 @@
  */
 
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 // Секретный ключ для JWT (в продакшене должен быть в переменных окружения)
