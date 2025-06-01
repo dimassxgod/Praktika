@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FitApp - Запис на тренування</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;1,200&display=swap" rel="stylesheet">
@@ -15,15 +15,15 @@
     <header class="main-header">
         <div class="container">
             <div class="logo">
-                <a href="index.html"><h1>FitApp</h1></a>
+                <a href="/"><h1>FitApp</h1></a>
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="index.html" class="active">Головна</a></li>
-                    <li><a href="trainers.html">Тренери</a></li>
-                    <li><a href="exercises.html">Вправи</a></li>
-                    <li><a href="nutrition.html">Харчування</a></li>
-                    <li><a href="auth.html" class="btn-login">Увійти</a></li>
+                    <li><a href="/" class="active">Головна</a></li>
+                    <li><a href="/trainers">Тренери</a></li>
+                    <li><a href="/exercises">Вправи</a></li>
+                    <li><a href="/nutrition">Харчування</a></li>
+                    <li><a href="/auth" class="btn-login">Увійти</a></li>
                 </ul>
             </nav>
             <div class="mobile-menu-btn">
@@ -70,7 +70,7 @@
         </div>
     </section>
 
-        <section class="plans">
+    <section class="plans">
         <div class="container">
             <div class="plans-content">
                 <p class="plans-gigatitle">ПРИЄДНУЙТЕСЬ ДО НАШОГО ЧЛЕНСТВА</p>
@@ -130,7 +130,7 @@
             
             <div class="booking-action">
                 <button class="btn btn-primary book-btn" disabled>Записатись</button>
-                <p class="login-notice">Для запису на тренування необхідно <a href="pages/auth.html">увійти в аккаунт</a></p>
+                <p class="login-notice">Для запису на тренування необхідно <a href="/auth">увійти в аккаунт</a></p>
             </div>
         </div>
     </section>
@@ -142,37 +142,37 @@
                 <!-- Здесь будут динамически загружаться упражнения из JS -->
                 <div class="exercise-card">
                     <div class="exercise-img">
-                        <img src="../assets/images/exercises/squat.jpg" alt="Вправа">
+                        <img src="assets/images/exercises/squat.jpg" alt="Вправа">
                     </div>
                     <div class="exercise-info">
                         <h3>Присідання</h3>
                         <p>Група м'язів: Ноги</p>
-                        <a href="exercises.html#squat" class="btn btn-sm">Докладніше</a>
+                        <a href="/exercises#squat" class="btn btn-sm">Докладніше</a>
                     </div>
                 </div>
                 <div class="exercise-card">
                     <div class="exercise-img">
-                        <img src="../assets/images/exercises/pushup.jpg" alt="Вправа">
+                        <img src="assets/images/exercises/pushup.jpg" alt="Вправа">
                     </div>
                     <div class="exercise-info">
                         <h3>Відтискання</h3>
                         <p>Група м'язів: Груди, Трицепс</p>
-                        <a href="exercises.html#pushup" class="btn btn-sm">Докладніше</a>
+                        <a href="/exercises#pushup" class="btn btn-sm">Докладніше</a>
                     </div>
                 </div>
                 <div class="exercise-card">
                     <div class="exercise-img">
-                        <img src="../assets/images/exercises/plank.jpg" alt="Вправа">
+                        <img src="assets/images/exercises/plank.jpg" alt="Вправа">
                     </div>
                     <div class="exercise-info">
                         <h3>Планка</h3>
                         <p>Група м'язів: Кор, Прес</p>
-                        <a href="exercises.html#plank" class="btn btn-sm">Докладніше/a>
+                        <a href="/exercises#plank" class="btn btn-sm">Докладніше</a>
                     </div>
                 </div>
             </div>
             <div class="view-more">
-                <a href="exercises.html" class="btn btn-primary">Дивитись усі вправи</a>
+                <a href="/exercises" class="btn btn-primary">Дивитись усі вправи</a>
             </div>
         </div>
     </section>
@@ -187,10 +187,10 @@
                 <div class="footer-links">
                     <h3>Навігація</h3>
                     <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="trainers.html">Тренери</a></li>
-                        <li><a href="exercises.html">Вправи</a></li>
-                        <li><a href="nutrition.html">Харчування</a></li>
+                        <li><a href="/">Головна</a></li>
+                        <li><a href="/trainers">Тренери</a></li>
+                        <li><a href="/exercises">Вправи</a></li>
+                        <li><a href="/nutrition">Харчування</a></li>
                     </ul>
                 </div>
                 <div class="footer-contact">

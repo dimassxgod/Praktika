@@ -97,7 +97,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Статические файлы
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, 'public/pages')));
 
 // API маршруты
 app.use('/api/auth', authRoutes);
@@ -142,8 +142,33 @@ app.get('/api/database/stats', async (req, res) => {
     }
 });
 
-// SPA fallback - должен быть последним
-app.get('*', (req, res) => {
+// Маршруты для HTML страниц
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/pages/index.html'));
+});
+
+app.get('/trainers', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/pages/trainers.html'));
+});
+
+app.get('/exercises', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/pages/exercises.html'));
+});
+
+app.get('/nutrition', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/pages/nutrition.html'));
+});
+
+app.get('/profile', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/pages/profile.html'));
+});
+
+app.get('/auth', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/pages/auth.html'));
+});
+
+// Обработка 404 ошибок
+app.use((req, res, next) => {
     // Проверяем, что это не API запрос
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({
@@ -152,7 +177,8 @@ app.get('*', (req, res) => {
         });
     }
     
-    res.sendFile(path.join(__dirname, '../public/pages', 'index.html'));
+    // Для обычных запросов отправляем 404 страницу или перенаправляем на главную
+    res.status(404).sendFile(path.join(__dirname, 'public/pages/index.html'));
 });
 
 // Обработка ошибок
@@ -169,7 +195,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Graceful shutdown - убрано закрытие MongoDB соединения
+// Graceful shutdown
 process.on('SIGTERM', () => {
     server.close(() => {
         console.log('🔄 Сервер остановлен');
@@ -187,8 +213,15 @@ const startServer = async () => {
         const server = app.listen(PORT, () => {
             console.log(`🚀 Сервер запущен на порту ${PORT}`);
             console.log(`🌐 Режим: ${process.env.NODE_ENV || 'development'}`);
-            console.log(`📁 Статические файлы: ${path.join(__dirname, '../public')}`);
+            console.log(`📁 Статические файлы: ${path.join(__dirname, 'public')}`);
             console.log(`💾 База данных: JSON файлы в папке data/`);
+            console.log(`🔗 Доступные маршруты:`);
+            console.log(`   - http://localhost:${PORT}/`);
+            console.log(`   - http://localhost:${PORT}/trainers`);
+            console.log(`   - http://localhost:${PORT}/exercises`);
+            console.log(`   - http://localhost:${PORT}/nutrition`);
+            console.log(`   - http://localhost:${PORT}/profile`);
+            console.log(`   - http://localhost:${PORT}/auth`);
             console.log('✋ Для остановки сервера нажмите Ctrl+C');
         });
         
