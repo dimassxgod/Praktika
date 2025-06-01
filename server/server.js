@@ -1,6 +1,7 @@
 /**
  * FitApp - server.js
  * Главный файл сервера для приложения фитнес-записи
+ * Переписан для работы с JSON файлами вместо MongoDB
  */
 
 // Загрузка переменных окружения
@@ -11,6 +12,7 @@ const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const fs = require('fs').promises;
 
 // Импорт маршрутов
 const authRoutes = require('./routes/authRoutes');
@@ -18,13 +20,44 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 
-// Импорт промежуточного ПО - ИСПРАВЛЕНО: authenticateJWT -> authenticateToken
+// Импорт промежуточного ПО
 const { authenticateToken } = require('./middleware/auth');
 
-//const { db, client } = require('./config/db');
+// Инициализация JSON базы данных
+const initJsonDatabase = async () => {
+    const dataDir = path.join(__dirname, 'data');
+    
+    // Создаем папку data если её нет
+    try {
+        await fs.access(dataDir);
+    } catch (error) {
+        await fs.mkdir(dataDir, { recursive: true });
+        console.log('📁 Создана папка data/');
+    }
+    
+    // Инициализируем JSON файлы если их нет
+    const jsonFiles = [
+        { name: 'users.json', data: [] },
+        { name: 'trainers.json', data: [] },
+        { name: 'bookings.json', data: [] },
+        { name: 'exercises.json', data: [] },
+        { name: 'nutrition.json', data: [] },
+        { name: 'profiles.json', data: [] }
+    ];
+    
+    for (const file of jsonFiles) {
+        const filePath = path.join(dataDir, file.name);
+        try {
+            await fs.access(filePath);
+        } catch (error) {
+            await fs.writeFile(filePath, JSON.stringify(file.data, null, 2));
+            console.log(`📄 Создан файл ${file.name}`);
+        }
+    }
+    
+    console.log('✅ JSON база данных инициализирована');
+};
 
-// Удалите проверку подключения к MySQL, т.к. MongoDB подключится асинхронно
-console.log('✅ Подключение к MongoDB инициализировано');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -66,7 +99,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Статические файлы
 app.use(express.static(path.join(__dirname, '../public')));
 
-// API маршруты - ИСПРАВЛЕНО: authenticateJWT -> authenticateToken
+// API маршруты
 app.use('/api/auth', authRoutes);
 app.use('/api/booking', authenticateToken, bookingRoutes);
 app.use('/api/content', contentRoutes);
@@ -76,9 +109,37 @@ app.use('/api/profile', authenticateToken, profileRoutes);
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',
+        database: 'JSON Files',
         timestamp: new Date().toISOString(),
         uptime: process.uptime()
     });
+});
+
+// Эндпоинт для получения статистики базы данных
+app.get('/api/database/stats', async (req, res) => {
+    try {
+        const dataDir = path.join(__dirname, 'data');
+        const files = await fs.readdir(dataDir);
+        const stats = {};
+        
+        for (const file of files) {
+            if (file.endsWith('.json')) {
+                const filePath = path.join(dataDir, file);
+                const data = JSON.parse(await fs.readFile(filePath, 'utf8'));
+                stats[file.replace('.json', '')] = {
+                    count: Array.isArray(data) ? data.length : Object.keys(data).length,
+                    size: (await fs.stat(filePath)).size
+                };
+            }
+        }
+        
+        res.json(stats);
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Ошибка получения статистики базы данных'
+        });
+    }
 });
 
 // SPA fallback - должен быть последним
@@ -96,7 +157,7 @@ app.get('*', (req, res) => {
 
 // Обработка ошибок
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error('❌ Ошибка сервера:', err.stack);
     
     // Определяем статус ошибки
     const status = err.status || err.statusCode || 500;
@@ -108,21 +169,37 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Graceful shutdown
+// Graceful shutdown - убрано закрытие MongoDB соединения
 process.on('SIGTERM', () => {
-  server.close(async () => {
-    await client.close();
-    console.log('MongoDB соединение закрыто.');
-    process.exit(0);
-  });
+    server.close(() => {
+        console.log('🔄 Сервер остановлен');
+        process.exit(0);
+    });
 });
 
 // Запуск сервера
-const server = app.listen(PORT, () => {
-    console.log(`🚀 Сервер запущен на порту ${PORT}`);
-    console.log(`🌐 Режим: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📁 Статические файлы: ${path.join(__dirname, '../public')}`);
-    console.log('✋ Для остановки сервера нажмите Ctrl+C');
-});
+const startServer = async () => {
+    try {
+        // Инициализируем JSON базу данных
+        await initJsonDatabase();
+        
+        // Запускаем сервер
+        const server = app.listen(PORT, () => {
+            console.log(`🚀 Сервер запущен на порту ${PORT}`);
+            console.log(`🌐 Режим: ${process.env.NODE_ENV || 'development'}`);
+            console.log(`📁 Статические файлы: ${path.join(__dirname, '../public')}`);
+            console.log(`💾 База данных: JSON файлы в папке data/`);
+            console.log('✋ Для остановки сервера нажмите Ctrl+C');
+        });
+        
+        // Экспортируем server для graceful shutdown
+        module.exports = { app, server };
+        
+    } catch (error) {
+        console.error('❌ Ошибка запуска сервера:', error);
+        process.exit(1);
+    }
+};
 
-module.exports = app;
+// Запускаем сервер
+startServer();

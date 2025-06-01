@@ -1,0 +1,50 @@
+[
+  {
+    "id": "training_1",
+    "name": "Утренняя йога",
+    "description": "Спокойная практика для начала дня",
+    "duration": 60,
+    "instructor": "Анна Петрова",
+    "maxParticipants": 15,
+    "price": 800,
+    "category": "yoga",
+    "difficulty": "beginner",
+    "createdAt": "2025-06-01T20:31:19.378Z"
+  },
+  {
+    "id": "training_2",
+    "name": "Силовая тренировка",
+    "description": "Комплексная работа с весами",
+    "duration": 90,
+    "instructor": "Михаил Иванов",
+    "maxParticipants": 10,
+    "price": 1200,
+    "category": "strength",
+    "difficulty": "intermediate",
+    "createdAt": "2025-06-01T20:31:19.379Z"
+  },
+  {
+    "id": "training_3",
+    "name": "Кардио HIIT",
+    "description": "Высокоинтенсивная интервальная тренировка",
+    "duration": 45,
+    "instructor": "Елена Сидорова",
+    "maxParticipants": 20,
+    "price": 1000,
+    "category": "cardio",
+    "difficulty": "advanced",
+    "createdAt": "2025-06-01T20:31:19.379Z"
+  },
+  {
+    "id": "training_4",
+    "name": "Растяжка и релаксация",
+    "description": "Мягкая растяжка для восстановления",
+    "duration": 75,
+    "instructor": "Ольга Козлова",
+    "maxParticipants": 12,
+    "price": 700,
+    "category": "stretching",
+    "difficulty": "beginner",
+    "createdAt": "2025-06-01T20:31:19.379Z"
+  }
+]

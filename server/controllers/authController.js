@@ -1,11 +1,114 @@
 /**
  * FitApp - server/controllers/authController.js
- * Контроллер для обработки запросов авторизации
+ * Контроллер для обработки запросов авторизации (JSON Database)
  */
 
-const User = require('../models/User');
+const fs = require('fs').promises;
+const path = require('path');
 const auth = require('../middleware/auth');
 const nodemailer = require('nodemailer');
+
+// Путь к JSON файлу с пользователями
+const USERS_DB_PATH = path.join(__dirname, '../data/users.json');
+
+/**
+ * Утилиты для работы с JSON базой данных
+ */
+class JSONDatabase {
+    constructor(filePath) {
+        this.filePath = filePath;
+        this.ensureFileExists();
+    }
+
+    async ensureFileExists() {
+        try {
+            await fs.access(this.filePath);
+        } catch (error) {
+            // Создаем директорию если не существует
+            const dir = path.dirname(this.filePath);
+            await fs.mkdir(dir, { recursive: true });
+            
+            // Создаем пустой файл с массивом пользователей
+            await fs.writeFile(this.filePath, JSON.stringify([], null, 2));
+        }
+    }
+
+    async readUsers() {
+        try {
+            const data = await fs.readFile(this.filePath, 'utf8');
+            return JSON.parse(data);
+        } catch (error) {
+            console.error('Error reading users database:', error);
+            return [];
+        }
+    }
+
+    async writeUsers(users) {
+        try {
+            await fs.writeFile(this.filePath, JSON.stringify(users, null, 2));
+        } catch (error) {
+            console.error('Error writing users database:', error);
+            throw error;
+        }
+    }
+
+    async findOne(query) {
+        const users = await this.readUsers();
+        return users.find(user => {
+            return Object.keys(query).every(key => {
+                if (key === 'resetPasswordExpiry' && query[key].$gt) {
+                    return new Date(user[key]) > query[key].$gt;
+                }
+                return user[key] === query[key];
+            });
+        }) || null;
+    }
+
+    async findById(id) {
+        const users = await this.readUsers();
+        return users.find(user => user.id === id) || null;
+    }
+
+    async save(user) {
+        const users = await this.readUsers();
+        
+        if (user.id) {
+            // Обновление существующего пользователя
+            const index = users.findIndex(u => u.id === user.id);
+            if (index !== -1) {
+                users[index] = { ...users[index], ...user };
+            }
+        } else {
+            // Создание нового пользователя
+            user.id = this.generateId();
+            users.push(user);
+        }
+        
+        await this.writeUsers(users);
+        return user;
+    }
+
+    async findByIdAndUpdate(id, updateData, options = {}) {
+        const users = await this.readUsers();
+        const index = users.findIndex(user => user.id === id);
+        
+        if (index === -1) {
+            return null;
+        }
+        
+        users[index] = { ...users[index], ...updateData };
+        await this.writeUsers(users);
+        
+        return options.new ? users[index] : users[index];
+    }
+
+    generateId() {
+        return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    }
+}
+
+// Инициализация базы данных
+const db = new JSONDatabase(USERS_DB_PATH);
 
 /**
  * Регистрация нового пользователя
@@ -45,7 +148,7 @@ async function register(req, res) {
         }
         
         // Проверка на существование пользователя
-        const existingUser = await User.findOne({ email: email.toLowerCase() });
+        const existingUser = await db.findOne({ email: email.toLowerCase() });
         if (existingUser) {
             return res.status(409).json({
                 success: false,
@@ -57,24 +160,27 @@ async function register(req, res) {
         const hashedPassword = await auth.hashPassword(password);
         
         // Создание нового пользователя
-        const newUser = new User({
+        const newUser = {
             name: name.trim(),
             email: email.toLowerCase().trim(),
             phone: phone ? phone.trim() : null,
             password: hashedPassword,
             role: 'user',
             isActive: true,
-            createdAt: new Date()
-        });
+            createdAt: new Date().toISOString(),
+            lastLogin: null,
+            resetPasswordToken: null,
+            resetPasswordExpiry: null
+        };
         
-        await newUser.save();
+        const savedUser = await db.save(newUser);
         
         // Генерация токена
-        const token = auth.generateToken(newUser);
+        const token = auth.generateToken(savedUser);
         
         // Отправка приветственного email (опционально)
         try {
-            await sendWelcomeEmail(newUser.email, newUser.name);
+            await sendWelcomeEmail(savedUser.email, savedUser.name);
         } catch (emailError) {
             console.error('Welcome email error:', emailError);
             // Не прерываем регистрацию из-за ошибки email
@@ -84,7 +190,7 @@ async function register(req, res) {
             success: true,
             message: 'Регистрация прошла успешно',
             token,
-            user: auth.sanitizeUser(newUser)
+            user: auth.sanitizeUser(savedUser)
         });
         
     } catch (error) {
@@ -120,7 +226,7 @@ async function login(req, res) {
         }
         
         // Поиск пользователя
-        const user = await User.findOne({ email: email.toLowerCase() });
+        const user = await db.findOne({ email: email.toLowerCase() });
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -146,8 +252,9 @@ async function login(req, res) {
         }
         
         // Обновление времени последнего входа
-        user.lastLogin = new Date();
-        await user.save();
+        await db.findByIdAndUpdate(user.id, { 
+            lastLogin: new Date().toISOString() 
+        });
         
         // Генерация токена
         const token = auth.generateToken(user);
@@ -185,7 +292,7 @@ async function resetPassword(req, res) {
         }
         
         // Поиск пользователя
-        const user = await User.findOne({ email: email.toLowerCase() });
+        const user = await db.findOne({ email: email.toLowerCase() });
         if (!user) {
             // Не раскрываем информацию о существовании пользователя
             return res.json({
@@ -196,12 +303,13 @@ async function resetPassword(req, res) {
         
         // Генерация токена сброса
         const resetToken = auth.generateResetToken();
-        const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 час
+        const resetTokenExpiry = new Date(Date.now() + 3600000).toISOString(); // 1 час
         
         // Сохранение токена в БД
-        user.resetPasswordToken = resetToken;
-        user.resetPasswordExpiry = resetTokenExpiry;
-        await user.save();
+        await db.findByIdAndUpdate(user.id, {
+            resetPasswordToken: resetToken,
+            resetPasswordExpiry: resetTokenExpiry
+        });
         
         // Отправка email с инструкциями
         try {
@@ -251,7 +359,7 @@ async function confirmResetPassword(req, res) {
         }
         
         // Поиск пользователя по токену
-        const user = await User.findOne({
+        const user = await db.findOne({
             resetPasswordToken: token,
             resetPasswordExpiry: { $gt: new Date() }
         });
@@ -265,10 +373,11 @@ async function confirmResetPassword(req, res) {
         
         // Обновление пароля
         const hashedPassword = await auth.hashPassword(newPassword);
-        user.password = hashedPassword;
-        user.resetPasswordToken = null;
-        user.resetPasswordExpiry = null;
-        await user.save();
+        await db.findByIdAndUpdate(user.id, {
+            password: hashedPassword,
+            resetPasswordToken: null,
+            resetPasswordExpiry: null
+        });
         
         res.json({
             success: true,
@@ -290,7 +399,7 @@ async function confirmResetPassword(req, res) {
  */
 async function getProfile(req, res) {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await db.findById(req.user.id);
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -334,11 +443,7 @@ async function updateProfile(req, res) {
             updateData.phone = phone ? phone.trim() : null;
         }
         
-        const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            updateData,
-            { new: true }
-        );
+        const updatedUser = await db.findByIdAndUpdate(userId, updateData, { new: true });
         
         if (!updatedUser) {
             return res.status(404).json({
