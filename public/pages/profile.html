@@ -10,65 +10,105 @@
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
-  <header>
-    <h1>Личный кабинет</h1>
-    <nav>
-      <a href="/">🏠 Главная</a>
-      <a href="/exercises">🏋 Упражнения</a>
-      <a href="/nutrition">🍎 Питание</a>
-      <a href="/trainers">👨‍🏫 Тренеры</a>
-      <a href="/auth">🔓 Выйти</a>
-    </nav>
-  </header>
+    <header class="main-header">
+        <div class="container">
+            <div class="logo">
+                <a href="/"><h1>FitApp</h1></a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Головна</a></li>
+                    <li><a href="/trainers">Тренери</a></li>
+                    <li><a href="/exercises">Вправи</a></li>
+                    <li><a href="/nutrition">Харчування</a></li>
+                    <li><a href="/auth" class="btn-login">Увійти</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
 
-  <main class="container">
+<main class="container profile-dashboard">
     <!-- Блок пользователя -->
-    <section class="card profile-info">
-      <h2>👤 Личная информация</h2>
-      <p><strong>Имя:</strong> <span id="user-name">Загрузка...</span></p>
-      <p><strong>Email:</strong> <span id="user-email">Загрузка...</span></p>
-      <p><strong>Возраст:</strong> <span id="user-age">Загрузка...</span></p>
+    <section class="profile-card user-info">
+      <h2>👤 Персональна інформація</h2>
+      <p><strong>Ім'я:</strong> <span id="user-name">Завантаження...</span></p>
+      <p><strong>Email:</strong> <span id="user-email">Завантаження...</span></p>
+      <p><strong>Вік:</strong> <span id="user-age">Завантаження...</span></p>
     </section>
 
     <!-- Блок тренера -->
-    <section class="card trainer-info">
-      <h2>👨‍🏫 Персональный тренер</h2>
-      <p><strong>Имя:</strong> <span id="trainer-name">Алексей Смирнов</span></p>
-      <p><strong>Опыт:</strong> 5 лет</p>
-      <p><strong>Специализация:</strong> Силовой тренинг, коррекция осанки</p>
+    <section class="profile-card trainer-card">
+      <h2>👨‍🏫 Персональний тренер</h2>
+      <p><strong>Ім'я:</strong> <span id="trainer-name">Олександр Петров</span></p>
+      <p><strong>Досвід:</strong> 7 років</p>
+      <p><strong>Спеціалізація:</strong> Силові тренування</p>
     </section>
 
     <!-- Блок тренировок -->
-    <section class="card workout-info">
-      <h2>📅 Ближайшие тренировки</h2>
-      <ul id="workout-list">
-        <li>Загрузка...</li>
+    <section class="profile-card workout-card">
+      <h2>📅 Найближчи тренування</h2>
+      <ul id="workout-list" class="profile-list">
+        <li>Завантаження...</li>
       </ul>
     </section>
 
     <!-- Блок прогресса -->
-    <section class="card progress-info">
-      <h2>📊 Мой прогресс</h2>
-      <p><strong>Вес:</strong> <span id="weight">72 кг</span></p>
-      <p><strong>Присед:</strong> 90 кг</p>
-      <p><strong>Жим лёжа:</strong> 75 кг</p>
-      <p><strong>Становая:</strong> 100 кг</p>
+    <section class="profile-card progress-card">
+      <h2>📊 Мій прогресс</h2>
+      <p><strong>Вага:</strong> <span id="weight">72 кг</span></p>
+      <p><strong>Присяд зі штангою:</strong> 90 кг</p>
+      <p><strong>Жим лєжачі:</strong> 75 кг</p>
+      <p><strong>Станова тяга:</strong> 100 кг</p>
     </section>
 
     <!-- Блок рекомендаций -->
-    <section class="card nutrition-info">
-      <h2>🍽 Рекомендации по питанию</h2>
-      <ul>
-        <li>Соблюдать режим питания: 4-5 приёмов пищи</li>
-        <li>Пить минимум 2 литра воды в день</li>
-        <li>Добавить белок в каждый приём пищи</li>
+    <section class="profile-card nutrition-card">
+      <h2>🍽 Рекомендації з харчування</h2>
+      <ul class="profile-list">
+        <li>4-5 прийомів їжі</li>
+        <li>Пити минімум 2 літра води в день</li>
+        <li>Додати бєлок в кажного прийому їжі</li>
       </ul>
     </section>
   </main>
 
-  <footer>
-    <p>&copy; 2025 Gym App</p>
-  </footer>
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>FitApp</h2>
+                    <p>Зручний сервіс для запису на тренування</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Навігація</h3>
+                    <ul>
+                        <li><a href="/">Головна</a></li>
+                        <li><a href="/trainers">Тренери</a></li>
+                        <li><a href="/exercises">Вправи</a></li>
+                        <li><a href="/nutrition">Харчування</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Контакти</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> м. Київ, вул. Спортивна, 10</p>
+                    <p><i class="fas fa-phone"></i> +380 123 456 789</p>
+                    <p><i class="fas fa-envelope"></i> info@fitapp.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FitApp. Усі права захищені.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-vk"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
 
   <script src="../js/main.js"></script>
   <script src="../js/profile.js"></script>

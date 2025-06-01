@@ -810,3 +810,141 @@ ul {
         margin-bottom: 20px;
     }
 }
+
+/* Стили для профиля пользователя */
+.profile-dashboard {
+    padding: 80px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.profile-card {
+    background-color: white;
+    padding: 30px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid var(--primary-color);
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.profile-card h2 {
+    color: var(--primary-color);
+    font-size: 22px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--light-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-card p {
+    margin-bottom: 15px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.profile-card p strong {
+    color: var(--dark-color);
+    font-weight: 600;
+    min-width: 120px;
+    display: inline-block;
+}
+
+.profile-card span {
+    color: var(--text-color);
+}
+
+/* Специальные цвета для разных карточек */
+.trainer-card {
+    border-left-color: var(--nav-color);
+}
+
+.trainer-card h2 {
+    color: var(--nav-color);
+}
+
+.workout-card {
+    border-left-color: var(--button-color);
+}
+
+.workout-card h2 {
+    color: var(--dark-color);
+}
+
+.progress-card {
+    border-left-color: var(--secondary-color);
+}
+
+.progress-card h2 {
+    color: var(--secondary-color);
+}
+
+.nutrition-card {
+    border-left-color: #4CAF50;
+}
+
+.nutrition-card h2 {
+    color: #4CAF50;
+}
+
+/* Стили для списков в профиле */
+.profile-list {
+    list-style: none;
+    padding: 0;
+}
+
+.profile-list li {
+    background-color: var(--light-color);
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: var(--radius);
+    border-left: 3px solid var(--primary-color);
+    transition: background-color 0.3s ease;
+}
+
+.profile-list li:hover {
+    background-color: #ddd;
+}
+
+.workout-card .profile-list li {
+    border-left-color: var(--button-color);
+}
+
+.nutrition-card .profile-list li {
+    border-left-color: #4CAF50;
+}
+
+/* Адаптивность для профиля */
+@media (max-width: 768px) {
+    .profile-dashboard {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 40px 0;
+    }
+    
+    .profile-card {
+        padding: 20px;
+    }
+    
+    .profile-card h2 {
+        font-size: 20px;
+    }
+    
+    .profile-card p strong {
+        min-width: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-card p strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+}

@@ -62,24 +62,24 @@ function loadTrainers() {
             trainers = [
                 {
                     id: 1,
-                    name: 'Александр Петров',
-                    specialty: 'Силовые тренировки',
+                    name: 'Олександр Петров',
+                    specialty: 'Силові тренування',
                     experience: 5,
-                    photo: '../assets/images/trainer1.jpg'
+                    photo: '../assets/images/trainers/trainer1.jpg'
                 },
                 {
                     id: 2,
-                    name: 'Елена Иванова',
-                    specialty: 'Йога, пилатес',
+                    name: 'Олена Сидорова',
+                    specialty: 'Йога, Стретчінг',
                     experience: 7,
-                    photo: '../assets/images/trainer2.jpg'
+                    photo: '../assets/images/trainers/trainer2.jpg'
                 },
                 {
                     id: 3,
-                    name: 'Михаил Сидоров',
-                    specialty: 'Кроссфит',
+                    name: 'Максим Ковальов',
+                    specialty: 'Функціональний тренінг, HIIT',
                     experience: 4,
-                    photo: '../assets/images/trainer3.jpg'
+                    photo: '../assets/images/trainers/trainer3.jpg'
                 },
             ];
             
@@ -108,7 +108,7 @@ function renderTrainersList(container) {
                 <div class="trainer-details">
                     <h4>${trainer.name}</h4>
                     <p class="trainer-specialty">${trainer.specialty}</p>
-                    <p class="trainer-experience">Опыт: ${trainer.experience} ${getYearsWord(trainer.experience)}</p>
+                    <p class="trainer-experience">Досвід: ${trainer.experience} ${getYearsWord(trainer.experience)}</p>
                 </div>
             </div>
         `;
@@ -237,8 +237,8 @@ function renderCalendar(container, year, month) {
     
     // Название месяцев
     const monthNames = [
-        'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+    'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 
+    'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
     ];
     
     // Текущая дата для выделения текущего дня
@@ -258,7 +258,7 @@ function renderCalendar(container, year, month) {
                 <div>Чт</div>
                 <div>Пт</div>
                 <div>Сб</div>
-                <div>Вс</div>
+                <div>Нд</div>
             </div>
             <div class="calendar-days">
     `;
@@ -311,9 +311,9 @@ function renderCalendar(container, year, month) {
             </div>
         </div>
         <div class="time-slots-container">
-            <h4>Выберите время</h4>
+            <h4>Оберіть час</h4>
             <div class="time-slots">
-                <p>Сначала выберите дату и тренера</p>
+                <p>Спочатку оберіть дату та тренера</p>
             </div>
         </div>
     `;
