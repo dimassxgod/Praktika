@@ -97,7 +97,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Статические файлы
-app.use(express.static(path.join(__dirname, 'public/pages')));
+// Папка public находится на уровень выше папки server, поэтому используем ../
+app.use('/css', express.static(path.join(__dirname, '../public/css')));
+app.use('/js', express.static(path.join(__dirname, '../public/js')));
+app.use('/assets', express.static(path.join(__dirname, '../public/assets')));
 
 // API маршруты
 app.use('/api/auth', authRoutes);
@@ -143,28 +146,29 @@ app.get('/api/database/stats', async (req, res) => {
 });
 
 // Маршруты для HTML страниц
+// Используем ../ чтобы выйти из папки server в папку Praktika, где находится public
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/pages/index.html'));
+    res.sendFile(path.join(__dirname, '../public', 'pages', 'index.html'));
 });
 
 app.get('/trainers', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/pages/trainers.html'));
+    res.sendFile(path.join(__dirname, '../public', 'pages', 'trainers.html'));
 });
 
 app.get('/exercises', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/pages/exercises.html'));
+    res.sendFile(path.join(__dirname, '../public', 'pages', 'exercises.html'));
 });
 
 app.get('/nutrition', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/pages/nutrition.html'));
+    res.sendFile(path.join(__dirname, '../public', 'pages', 'nutrition.html'));
 });
 
 app.get('/profile', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/pages/profile.html'));
+    res.sendFile(path.join(__dirname, '../public', 'pages', 'profile.html'));
 });
 
 app.get('/auth', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/pages/auth.html'));
+    res.sendFile(path.join(__dirname, '../public', 'pages', 'auth.html'));
 });
 
 // Обработка 404 ошибок
@@ -178,7 +182,7 @@ app.use((req, res, next) => {
     }
     
     // Для обычных запросов отправляем 404 страницу или перенаправляем на главную
-    res.status(404).sendFile(path.join(__dirname, 'public/pages/index.html'));
+    res.status(404).sendFile(path.join(__dirname, '../public', 'pages', 'index.html'));
 });
 
 // Обработка ошибок
@@ -195,14 +199,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-    server.close(() => {
-        console.log('🔄 Сервер остановлен');
-        process.exit(0);
-    });
-});
-
 // Запуск сервера
 const startServer = async () => {
     try {
@@ -213,7 +209,7 @@ const startServer = async () => {
         const server = app.listen(PORT, () => {
             console.log(`🚀 Сервер запущен на порту ${PORT}`);
             console.log(`🌐 Режим: ${process.env.NODE_ENV || 'development'}`);
-            console.log(`📁 Статические файлы: ${path.join(__dirname, 'public')}`);
+            console.log(`📁 Статические файлы: ${path.join(__dirname, '../public')}`);
             console.log(`💾 База данных: JSON файлы в папке data/`);
             console.log(`🔗 Доступные маршруты:`);
             console.log(`   - http://localhost:${PORT}/`);
@@ -223,6 +219,14 @@ const startServer = async () => {
             console.log(`   - http://localhost:${PORT}/profile`);
             console.log(`   - http://localhost:${PORT}/auth`);
             console.log('✋ Для остановки сервера нажмите Ctrl+C');
+        });
+        
+        // Graceful shutdown
+        process.on('SIGTERM', () => {
+            server.close(() => {
+                console.log('🔄 Сервер остановлен');
+                process.exit(0);
+            });
         });
         
         // Экспортируем server для graceful shutdown
