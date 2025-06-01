@@ -1,5 +1,3 @@
-const db = require('./database');
-
 // === USERS ===
 
 async function getUserByEmail(email) {

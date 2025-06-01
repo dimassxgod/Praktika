@@ -21,7 +21,7 @@ const profileRoutes = require('./routes/profileRoutes');
 // Импорт промежуточного ПО - ИСПРАВЛЕНО: authenticateJWT -> authenticateToken
 const { authenticateToken } = require('./middleware/auth');
 
-const { db, client } = require('./config/db');
+//const { db, client } = require('./config/db');
 
 // Удалите проверку подключения к MySQL, т.к. MongoDB подключится асинхронно
 console.log('✅ Подключение к MongoDB инициализировано');

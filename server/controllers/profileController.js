@@ -1,5 +1,5 @@
 // server/controllers/profileController.js
-const { db } = require('../config/db');
+//const { db } = require('../config/db');
 const { ObjectId } = require('mongodb');
 
 async function getUser(req, res) {
