@@ -133,7 +133,7 @@ function updateUIForLoggedInUser(user) {
     const loginBtn = document.querySelector('.btn-login');
     if (loginBtn) {
         loginBtn.textContent = user.name || user.firstName || 'Личный кабинет';
-        loginBtn.href = 'profile.html';
+        loginBtn.href = '/profile';
         loginBtn.classList.add('logged-in');
     }
     
@@ -158,7 +158,7 @@ function updateUIForLoggedOutUser() {
     const loginBtn = document.querySelector('.btn-login');
     if (loginBtn) {
         loginBtn.textContent = 'Увійти';
-        loginBtn.href = 'auth.html';
+        loginBtn.href = '/auth';
         loginBtn.classList.remove('logged-in');
     }
     
