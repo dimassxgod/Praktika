@@ -236,10 +236,14 @@ function renderPopularExercises(exercises) {
 /**
  * Выход из системы
  */
+
 function logout() {
     localStorage.removeItem('fitapp_token');
     currentUser = null;
     showNotification('Вы вышли из системы', 'success');
+    
+    // Обновляем UI
+    updateUIForLoggedOutUser();
     
     // Перенаправление на главную страницу
     setTimeout(() => {
