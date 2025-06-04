@@ -173,22 +173,33 @@ ul {
     padding: 100px 0;
     text-align: center;
     height: 1000px;
+    padding-right: 50%;
+    padding-top: 10%;
 }
 
 .hero-content {
     max-width: 700px;
     margin: 0 auto;
+    text-align: left;
 }
 
 .hero-content h2 {
-    font-size: 42px;
-    margin-bottom: 20px;
+    font-size: 50px;
+    color: var(--light-color);
 }
 
 .hero-content p {
-    font-size: 18px;
+    font-size: 42px;
+    color: var(--accent-color);
     margin-bottom: 30px;
 }
+.btn-hero{
+    background-color: var(--accent-color);
+    color: #1a1363;
+    font-weight: 700;
+    border-radius: 30px;
+}
+
 
 /* Секция преимуществ */
 .features {
