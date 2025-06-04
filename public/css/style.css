@@ -337,28 +337,10 @@ ul {
     padding-right: 10px;
 }
 
-/* Карточка тренера */
-.trainer-card {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
 
 .trainer-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.trainer-card.selected {
-    border-color: var(--primary-color);
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    color: white;
 }
 
 .trainer-avatar {
