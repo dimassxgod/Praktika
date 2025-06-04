@@ -1,695 +1,578 @@
 /**
  * FitApp - booking.js
- * JavaScript файл для функциональности записи на тренировки
+ * Клиентский скрипт для записи на тренировки
  */
 
-// Глобальные переменные
-let trainers = []; // Список тренеров
-let selectedTrainer = null; // Выбранный тренер
-let selectedDate = null; // Выбранная дата
-let selectedTime = null; // Выбранное время
-let availableTimeSlots = []; // Доступные временные интервалы
+// Глобальные переменные для booking
+let selectedTrainer = null;
+let selectedDate = null;
+let selectedTime = null;
+let availableTrainings = [];
+let trainers = [];
 
-// Инициализация при загрузке страницы
+// Инициализация модуля записи
 document.addEventListener('DOMContentLoaded', () => {
-    initBookingForm();
+    if (document.querySelector('.booking')) {
+        initBooking();
+    }
 });
 
 /**
- * Инициализация формы записи на тренировку
+ * Инициализация системы записи
  */
-function initBookingForm() {
-    const trainersListContainer = document.querySelector('.trainers-list');
-    const calendarContainer = document.querySelector('.calendar');
-    const bookBtn = document.querySelector('.book-btn');
+async function initBooking() {
+    try {
+        await loadTrainers();
+        await loadTrainings();
+        renderTrainers();
+        initCalendar();
+        setupBookingHandlers();
+    } catch (error) {
+        console.error('Ошибка инициализации записи:', error);
+        showNotification('Ошибка загрузки данных для записи', 'error');
+    }
+}
+
+/**
+ * Загрузка списка тренеров
+ */
+async function loadTrainers() {
+    try {
+        const response = await fetch(`${window.FitApp.apiBaseUrl}/content/trainers`);
+        if (response.ok) {
+            trainers = await response.json();
+        } else {
+            throw new Error('Ошибка загрузки тренеров');
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки тренеров:', error);
+        trainers = [];
+    }
+}
+
+/**
+ * Загрузка доступных тренировок
+ */
+async function loadTrainings() {
+    try {
+        const response = await fetch(`${window.FitApp.apiBaseUrl}/content/trainings`);
+        if (response.ok) {
+            availableTrainings = await response.json();
+        } else {
+            throw new Error('Ошибка загрузки тренировок');
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки тренировок:', error);
+        availableTrainings = [];
+    }
+}
+
+/**
+ * Отображение списка тренеров
+ */
+function renderTrainers() {
+    const trainersList = document.querySelector('.trainers-list');
     
-    if (!trainersListContainer || !calendarContainer) return;
+    if (!trainersList || trainers.length === 0) {
+        if (trainersList) {
+            trainersList.innerHTML = '<p>Тренеры не найдены</p>';
+        }
+        return;
+    }
     
-    // Загрузка тренеров
-    loadTrainers()
-        .then(() => {
-            renderTrainersList(trainersListContainer);
-        })
-        .catch(error => {
-            console.error('Ошибка загрузки тренеров:', error);
-            trainersListContainer.innerHTML = '<p class="error-message">Ошибка загрузки списка тренеров</p>';
+    trainersList.innerHTML = trainers.map(trainer => `
+        <div class="trainer-card ${selectedTrainer?.id === trainer.id ? 'selected' : ''}" 
+             data-trainer-id="${trainer.id}">
+            <div class="trainer-avatar">
+                <img src="${trainer.photo || 'assets/images/trainers/default.jpg'}" 
+                     alt="${trainer.name}"
+                     onerror="this.src='assets/images/trainers/default.jpg'">
+            </div>
+            <div class="trainer-info">
+                <h4>${trainer.name}</h4>
+                <p class="trainer-specialty">${trainer.specialty || 'Фітнес-тренер'}</p>
+                <p class="trainer-experience">${trainer.experience || 'Досвід: 1+ років'}</p>
+                <div class="trainer-rating">
+                    ${renderStars(trainer.rating || 5)}
+                    <span class="rating-text">${trainer.rating || 5}/5</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Добавляем обработчики событий для карточек тренеров
+    const trainerCards = trainersList.querySelectorAll('.trainer-card');
+    trainerCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const trainerId = parseInt(card.dataset.trainerId);
+            selectTrainer(trainerId);
         });
+    });
+}
+
+/**
+ * Отображение звезд рейтинга
+ */
+function renderStars(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    let starsHtml = '';
     
-    // Инициализация календаря
-    initCalendar(calendarContainer);
+    for (let i = 0; i < fullStars; i++) {
+        starsHtml += '<i class="fas fa-star"></i>';
+    }
     
-    // Обработчик кнопки записи
+    if (hasHalfStar) {
+        starsHtml += '<i class="fas fa-star-half-alt"></i>';
+    }
+    
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+        starsHtml += '<i class="far fa-star"></i>';
+    }
+    
+    return starsHtml;
+}
+
+/**
+ * Выбор тренера
+ */
+function selectTrainer(trainerId) {
+    selectedTrainer = trainers.find(t => t.id === trainerId);
+    
+    // Обновляем UI
+    document.querySelectorAll('.trainer-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    const selectedCard = document.querySelector(`[data-trainer-id="${trainerId}"]`);
+    if (selectedCard) {
+        selectedCard.classList.add('selected');
+    }
+    
+    // Обновляем календарь
+    updateCalendar();
+    
+    // Сбрасываем выбранное время
+    selectedTime = null;
+    updateBookingButton();
+    
+    console.log('Выбран тренер:', selectedTrainer);
+}
+
+/**
+ * Инициализация календаря
+ */
+function initCalendar() {
+    const calendar = document.querySelector('.calendar');
+    if (!calendar) return;
+    
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    
+    renderCalendar(currentYear, currentMonth);
+}
+
+/**
+ * Отображение календаря
+ */
+function renderCalendar(year, month) {
+    const calendar = document.querySelector('.calendar');
+    if (!calendar) return;
+    
+    const today = new Date();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    
+    const monthNames = [
+        'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
+        'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
+    ];
+    
+    const dayNames = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    
+    let calendarHtml = `
+        <div class="calendar-header">
+            <button class="calendar-nav prev-month" data-year="${year}" data-month="${month - 1}">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h3 class="calendar-title">${monthNames[month]} ${year}</h3>
+            <button class="calendar-nav next-month" data-year="${year}" data-month="${month + 1}">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="calendar-grid">
+            <div class="calendar-days-header">
+                ${dayNames.map(day => `<div class="day-header">${day}</div>`).join('')}
+            </div>
+            <div class="calendar-days">
+    `;
+    
+    // Пустые ячейки в начале месяца
+    for (let i = 0; i < startingDayOfWeek; i++) {
+        calendarHtml += '<div class="calendar-day empty"></div>';
+    }
+    
+    // Дни месяца
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dateString = formatDateForBooking(date);
+        const isToday = date.toDateString() === today.toDateString();
+        const isPast = date < today && !isToday;
+        const isSelected = selectedDate === dateString;
+        const hasTrainings = selectedTrainer && hasAvailableTrainings(dateString);
+        
+        let classes = ['calendar-day'];
+        if (isToday) classes.push('today');
+        if (isPast) classes.push('past');
+        if (isSelected) classes.push('selected');
+        if (hasTrainings) classes.push('has-trainings');
+        if (!hasTrainings && selectedTrainer) classes.push('no-trainings');
+        
+        calendarHtml += `
+            <div class="${classes.join(' ')}" 
+                 data-date="${dateString}"
+                 ${!isPast && hasTrainings ? 'data-clickable="true"' : ''}>
+                <span class="day-number">${day}</span>
+                ${hasTrainings ? '<div class="training-indicator"></div>' : ''}
+            </div>
+        `;
+    }
+    
+    calendarHtml += `
+            </div>
+        </div>
+        <div class="time-slots">
+            <h4>Доступное время:</h4>
+            <div class="time-slots-grid">
+                <p>Выберите дату для просмотра доступного времени</p>
+            </div>
+        </div>
+    `;
+    
+    calendar.innerHTML = calendarHtml;
+    
+    // Добавляем обработчики событий
+    setupCalendarHandlers();
+}
+
+/**
+ * Настройка обработчиков событий для календаря
+ */
+function setupCalendarHandlers() {
+    // Навигация по месяцам
+    document.querySelectorAll('.calendar-nav').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const year = parseInt(e.currentTarget.dataset.year);
+            const month = parseInt(e.currentTarget.dataset.month);
+            
+            let newYear = year;
+            let newMonth = month;
+            
+            if (newMonth < 0) {
+                newMonth = 11;
+                newYear--;
+            } else if (newMonth > 11) {
+                newMonth = 0;
+                newYear++;
+            }
+            
+            renderCalendar(newYear, newMonth);
+        });
+    });
+    
+    // Выбор даты
+    document.querySelectorAll('.calendar-day[data-clickable="true"]').forEach(day => {
+        day.addEventListener('click', (e) => {
+            const date = e.currentTarget.dataset.date;
+            selectDate(date);
+        });
+    });
+}
+
+/**
+ * Выбор даты
+ */
+function selectDate(dateString) {
+    selectedDate = dateString;
+    selectedTime = null;
+    
+    // Обновляем UI календаря
+    document.querySelectorAll('.calendar-day').forEach(day => {
+        day.classList.remove('selected');
+    });
+    
+    const selectedDay = document.querySelector(`[data-date="${dateString}"]`);
+    if (selectedDay) {
+        selectedDay.classList.add('selected');
+    }
+    
+    // Отображаем доступные временные слоты
+    renderTimeSlots(dateString);
+    updateBookingButton();
+    
+    console.log('Выбрана дата:', dateString);
+}
+
+/**
+ * Отображение временных слотов
+ */
+function renderTimeSlots(dateString) {
+    const timeSlotsGrid = document.querySelector('.time-slots-grid');
+    if (!timeSlotsGrid || !selectedTrainer) return;
+    
+    const availableSlots = getAvailableTimeSlots(selectedTrainer.id, dateString);
+    
+    if (availableSlots.length === 0) {
+        timeSlotsGrid.innerHTML = '<p>На выбранную дату нет свободного времени</p>';
+        return;
+    }
+    
+    timeSlotsGrid.innerHTML = availableSlots.map(slot => `
+        <button class="time-slot ${selectedTime === slot ? 'selected' : ''}" 
+                data-time="${slot}">
+            ${slot}
+        </button>
+    `).join('');
+    
+    // Добавляем обработчики для временных слотов
+    document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.addEventListener('click', (e) => {
+            const time = e.currentTarget.dataset.time;
+            selectTime(time);
+        });
+    });
+}
+
+/**
+ * Выбор времени
+ */
+function selectTime(time) {
+    selectedTime = time;
+    
+    // Обновляем UI
+    document.querySelectorAll('.time-slot').forEach(slot => {
+        slot.classList.remove('selected');
+    });
+    
+    const selectedSlot = document.querySelector(`[data-time="${time}"]`);
+    if (selectedSlot) {
+        selectedSlot.classList.add('selected');
+    }
+    
+    updateBookingButton();
+    
+    console.log('Выбрано время:', time);
+}
+
+/**
+ * Обновление календаря при выборе тренера
+ */
+function updateCalendar() {
+    const currentCalendarTitle = document.querySelector('.calendar-title');
+    if (currentCalendarTitle) {
+        const titleText = currentCalendarTitle.textContent;
+        const [monthName, year] = titleText.split(' ');
+        const monthNames = [
+            'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
+            'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
+        ];
+        const monthIndex = monthNames.indexOf(monthName);
+        renderCalendar(parseInt(year), monthIndex);
+    }
+}
+
+/**
+ * Проверка наличия доступных тренировок на дату
+ */
+function hasAvailableTrainings(dateString) {
+    if (!selectedTrainer) return false;
+    
+    return availableTrainings.some(training => 
+        training.trainerId === selectedTrainer.id && 
+        training.date === dateString &&
+        !training.isBooked
+    );
+}
+
+/**
+ * Получение доступных временных слотов
+ */
+function getAvailableTimeSlots(trainerId, dateString) {
+    return availableTrainings
+        .filter(training => 
+            training.trainerId === trainerId && 
+            training.date === dateString &&
+            !training.isBooked
+        )
+        .map(training => training.time)
+        .sort();
+}
+
+/**
+ * Настройка обработчиков записи
+ */
+function setupBookingHandlers() {
+    const bookBtn = document.querySelector('.book-btn');
     if (bookBtn) {
         bookBtn.addEventListener('click', handleBooking);
     }
 }
 
 /**
- * Загрузка списка тренеров с сервера
- * @returns {Promise} - Promise с данными тренеров
+ * Обработка записи на тренировку (исправленная версия)
  */
-function loadTrainers() {
-    // Используем функцию loadData из main.js
-    return window.FitApp.loadData('trainers')
-        .then(data => {
-            trainers = data;
-            return trainers;
-        })
-        .catch(error => {
-            // В случае ошибки загружаем тестовые данные
-            console.warn('Используем тестовые данные тренеров:', error);
-            
-            trainers = [
-                {
-                    id: 1,
-                    name: 'Олександр Петров',
-                    specialty: 'Силові тренування',
-                    experience: 5,
-                    photo: '../assets/images/trainers/trainer1.jpg'
-                },
-                {
-                    id: 2,
-                    name: 'Олена Сидорова',
-                    specialty: 'Йога, Стретчінг',
-                    experience: 7,
-                    photo: '../assets/images/trainers/trainer2.jpg'
-                },
-                {
-                    id: 3,
-                    name: 'Максим Ковальов',
-                    specialty: 'Функціональний тренінг, HIIT',
-                    experience: 4,
-                    photo: '../assets/images/trainers/trainer3.jpg'
-                },
-            ];
-            
-            return trainers;
-        });
-}
-
-/**
- * Отрисовка списка тренеров
- * @param {HTMLElement} container - DOM-элемент для списка тренеров
- */
-function renderTrainersList(container) {
-    if (trainers.length === 0) {
-        container.innerHTML = '<p>Нет доступных тренеров</p>';
+async function handleBooking() {
+    // Проверка авторизации с подробной отладкой
+    if (!window.FitApp.currentUser) {
+        console.log('❌ Пользователь не авторизован');
+        showNotification('Необходимо войти в систему для записи', 'warning');
         return;
     }
     
-    let html = `<div class="trainers-selection">`;
+    console.log('👤 Текущий пользователь:', window.FitApp.currentUser);
     
-    trainers.forEach(trainer => {
-        html += `
-            <div class="trainer-item" data-trainer-id="${trainer.id}">
-                <div class="trainer-photo">
-                    <img src="${trainer.photo || '../assets/images/trainer-placeholder.jpg'}" alt="${trainer.name}">
-                </div>
-                <div class="trainer-details">
-                    <h4>${trainer.name}</h4>
-                    <p class="trainer-specialty">${trainer.specialty}</p>
-                    <p class="trainer-experience">Досвід: ${trainer.experience} ${getYearsWord(trainer.experience)}</p>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += `</div>`;
-    container.innerHTML = html;
-    
-    // Добавляем стили
-    addTrainerSelectionStyles();
-    
-    // Добавляем обработчики
-    const trainerItems = container.querySelectorAll('.trainer-item');
-    trainerItems.forEach(item => {
-        item.addEventListener('click', () => {
-            // Снимаем выделение со всех тренеров
-            trainerItems.forEach(i => i.classList.remove('selected'));
-            
-            // Выделяем выбранного тренера
-            item.classList.add('selected');
-            
-            // Запоминаем выбранного тренера
-            const trainerId = parseInt(item.getAttribute('data-trainer-id'));
-            selectedTrainer = trainers.find(t => t.id === trainerId);
-            
-            // Обновляем доступные временные слоты
-            updateTimeSlots();
-            
-            // Проверяем возможность записи
-            checkBookingAvailability();
-        });
-    });
-}
-
-/**
- * Добавление стилей для списка тренеров
- */
-function addTrainerSelectionStyles() {
-    // Добавляем стили если их еще нет
-    if (!document.getElementById('trainer-selection-styles')) {
-        const styleElement = document.createElement('style');
-        styleElement.id = 'trainer-selection-styles';
-        
-        styleElement.textContent = `
-            .trainers-selection {
-                max-height: 300px;
-                overflow-y: auto;
-            }
-            .trainer-item {
-                display: flex;
-                align-items: center;
-                padding: 10px;
-                margin-bottom: 10px;
-                border-radius: var(--radius);
-                background-color: #f9f9f9;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-            .trainer-item:hover {
-                background-color: #f0f0f0;
-            }
-            .trainer-item.selected {
-                background-color: #e8f5e9;
-                border-left: 3px solid var(--primary-color);
-            }
-            .trainer-photo {
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                overflow: hidden;
-                margin-right: 15px;
-            }
-            .trainer-photo img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-            .trainer-details h4 {
-                margin: 0 0 5px;
-                font-size: 16px;
-            }
-            .trainer-specialty {
-                color: var(--primary-color);
-                font-size: 14px;
-                margin: 0 0 3px;
-            }
-            .trainer-experience {
-                color: var(--gray-color);
-                font-size: 12px;
-                margin: 0;
-            }
-        `;
-        
-        document.head.appendChild(styleElement);
-    }
-}
-
-/**
- * Инициализация календаря
- * @param {HTMLElement} container - DOM-элемент для календаря
- */
-function initCalendar(container) {
-    // Получаем текущую дату
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-    
-    // Создаем календарь на текущий месяц
-    renderCalendar(container, currentYear, currentMonth);
-    
-    // Добавляем стили для календаря
-    addCalendarStyles();
-}
-
-/**
- * Отрисовка календаря
- * @param {HTMLElement} container - DOM-элемент для календаря
- * @param {number} year - Год
- * @param {number} month - Месяц (0-11)
- */
-function renderCalendar(container, year, month) {
-    // Получаем первый день месяца
-    const firstDay = new Date(year, month, 1);
-    // Получаем последний день месяца
-    const lastDay = new Date(year, month + 1, 0);
-    
-    // Название месяцев
-    const monthNames = [
-    'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 
-    'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
-    ];
-    
-    // Текущая дата для выделения текущего дня
-    const today = new Date();
-    
-    let html = `
-        <div class="calendar-header">
-            <button class="calendar-btn prev-month">&laquo;</button>
-            <h3 class="calendar-title">${monthNames[month]} ${year}</h3>
-            <button class="calendar-btn next-month">&raquo;</button>
-        </div>
-        <div class="calendar-body">
-            <div class="calendar-days-header">
-                <div>Пн</div>
-                <div>Вт</div>
-                <div>Ср</div>
-                <div>Чт</div>
-                <div>Пт</div>
-                <div>Сб</div>
-                <div>Нд</div>
-            </div>
-            <div class="calendar-days">
-    `;
-    
-    // Получаем день недели первого дня месяца (0 - воскресенье, 1 - понедельник и т.д.)
-    let firstDayOfWeek = firstDay.getDay();
-    // Преобразуем день недели для соответствия нашему формату (понедельник - первый день)
-    firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-    
-    // Добавляем пустые ячейки для дней до начала месяца
-    for (let i = 0; i < firstDayOfWeek; i++) {
-        html += `<div class="calendar-day empty"></div>`;
-    }
-    
-    // Добавляем дни месяца
-    const daysInMonth = lastDay.getDate();
-    
-    for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month, day);
-        
-        // Проверяем, является ли день прошедшим
-        const isPastDay = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        
-        // Проверяем, является ли день текущим
-        const isToday = date.getDate() === today.getDate() &&
-                       date.getMonth() === today.getMonth() &&
-                       date.getFullYear() === today.getFullYear();
-        
-        // Создаем классы для дня
-        let dayClass = 'calendar-day';
-        if (isPastDay) {
-            dayClass += ' past';
-        }
-        if (isToday) {
-            dayClass += ' today';
-        }
-        
-        // Проверяем, выбран ли этот день
-        if (selectedDate && date.getDate() === selectedDate.getDate() &&
-            date.getMonth() === selectedDate.getMonth() &&
-            date.getFullYear() === selectedDate.getFullYear()) {
-            dayClass += ' selected';
-        }
-        
-        // Добавляем день в календарь
-        html += `<div class="${dayClass}" data-date="${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}">${day}</div>`;
-    }
-    
-    html += `
-            </div>
-        </div>
-        <div class="time-slots-container">
-            <h4>Оберіть час</h4>
-            <div class="time-slots">
-                <p>Спочатку оберіть дату та тренера</p>
-            </div>
-        </div>
-    `;
-    
-    container.innerHTML = html;
-    
-    // Добавляем обработчики для кнопок навигации по месяцам
-    const prevMonthBtn = container.querySelector('.prev-month');
-    const nextMonthBtn = container.querySelector('.next-month');
-    
-    prevMonthBtn.addEventListener('click', () => {
-        let newMonth = month - 1;
-        let newYear = year;
-        
-        if (newMonth < 0) {
-            newMonth = 11;
-            newYear--;
-        }
-        
-        renderCalendar(container, newYear, newMonth);
-    });
-    
-    nextMonthBtn.addEventListener('click', () => {
-        let newMonth = month + 1;
-        let newYear = year;
-        
-        if (newMonth > 11) {
-            newMonth = 0;
-            newYear++;
-        }
-        
-        renderCalendar(container, newYear, newMonth);
-    });
-    
-    // Добавляем обработчики для выбора дня
-    const dayElements = container.querySelectorAll('.calendar-day:not(.empty):not(.past)');
-    dayElements.forEach(dayElement => {
-        dayElement.addEventListener('click', () => {
-            // Снимаем выделение со всех дней
-            dayElements.forEach(el => el.classList.remove('selected'));
-            
-            // Выделяем выбранный день
-            dayElement.classList.add('selected');
-            
-            // Запоминаем выбранную дату
-            const dateStr = dayElement.getAttribute('data-date');
-            selectedDate = new Date(dateStr);
-            
-            // Обновляем доступные временные слоты
-            updateTimeSlots();
-            
-            // Проверяем возможность записи
-            checkBookingAvailability();
-        });
-    });
-}
-
-/**
- * Добавление стилей для календаря
- */
-function addCalendarStyles() {
-    // Добавляем стили если их еще нет
-    if (!document.getElementById('calendar-styles')) {
-        const styleElement = document.createElement('style');
-        styleElement.id = 'calendar-styles';
-        
-        styleElement.textContent = `
-            .calendar-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 15px;
-            }
-            
-            .calendar-title {
-                text-align: center;
-                margin: 0;
-                font-size: 18px;
-            }
-            
-            .calendar-btn {
-                background: transparent;
-                border: none;
-                cursor: pointer;
-                font-size: 18px;
-                color: var(--primary-color);
-                padding: 5px 10px;
-            }
-            
-            .calendar-days-header {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                text-align: center;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-            
-            .calendar-days {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                gap: 5px;
-            }
-            
-            .calendar-day {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 35px;
-                border-radius: var(--radius);
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-            
-            .calendar-day:not(.empty):not(.past):hover {
-                background-color: #e8f5e9;
-            }
-            
-            .calendar-day.empty {
-                visibility: hidden;
-            }
-            
-            .calendar-day.past {
-                color: #ccc;
-                cursor: not-allowed;
-            }
-            
-            .calendar-day.today {
-                border: 1px solid var(--primary-color);
-            }
-            
-            .calendar-day.selected {
-                background-color: var(--primary-color);
-                color: white;
-            }
-            
-            .time-slots-container {
-                margin-top: 20px;
-            }
-            
-            .time-slots-container h4 {
-                margin-bottom: 10px;
-                font-size: 16px;
-                color: var(--dark-color);
-            }
-            
-            .time-slots {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-            
-            .time-slot {
-                padding: 8px 12px;
-                border-radius: var(--radius);
-                background-color: #f0f0f0;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-            
-            .time-slot:hover {
-                background-color: #e0e0e0;
-            }
-            
-            .time-slot.selected {
-                background-color: var(--primary-color);
-                color: white;
-            }
-            
-            .time-slot.unavailable {
-                background-color: #f5f5f5;
-                color: #aaa;
-                cursor: not-allowed;
-            }
-        `;
-        
-        document.head.appendChild(styleElement);
-    }
-}
-
-/**
- * Обновление доступных временных слотов
- */
-function updateTimeSlots() {
-    if (!selectedTrainer || !selectedDate) {
+    if (!selectedTrainer || !selectedDate || !selectedTime) {
+        showNotification('Выберите тренера, дату и время', 'warning');
         return;
     }
     
-    const timeSlotsContainer = document.querySelector('.time-slots');
-    if (!timeSlotsContainer) return;
-    
-    // Загрузка доступных временных слотов для выбранного тренера и даты
-    loadAvailableTimeSlots(selectedTrainer.id, selectedDate)
-        .then(slots => {
-            renderTimeSlots(timeSlotsContainer, slots);
-        })
-        .catch(error => {
-            console.error('Ошибка загрузки доступных временных слотов:', error);
-            timeSlotsContainer.innerHTML = '<p class="error-message">Ошибка загрузки расписания</p>';
+    try {
+        const bookingData = {
+            trainerId: selectedTrainer.id,
+            date: selectedDate,
+            time: selectedTime,
+            trainerName: selectedTrainer.name,
+            userId: window.FitApp.currentUser.id,
+            status: 'confirmed',
+            createdAt: new Date().toISOString(),
+            notes: ''
+        };
+        
+        console.log('📝 Данные для записи:', bookingData);
+        
+        // Подготавливаем заголовки с токеном
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        
+        // Добавляем токен если он есть
+        if (window.FitApp.currentUser.token) {
+            headers['Authorization'] = `Bearer ${window.FitApp.currentUser.token}`;
+            console.log('🔑 Токен добавлен в заголовки');
+        } else {
+            console.log('⚠️ Токен отсутствует');
+        }
+        
+        console.log('📤 Отправка запроса на:', `${window.FitApp.apiBaseUrl}/bookings`);
+        console.log('📋 Заголовки:', headers);
+        
+        // Отправляем запрос на сервер
+        const response = await fetch(`${window.FitApp.apiBaseUrl}/bookings`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(bookingData)
         });
-}
-
-/**
- * Загрузка доступных временных слотов
- * @param {number} trainerId - ID тренера
- * @param {Date} date - Выбранная дата
- * @returns {Promise} - Promise с данными временных слотов
- */
-function loadAvailableTimeSlots(trainerId, date) {
-    // В реальном приложении здесь будет запрос к API
-    // Сейчас используем тестовые данные
-    
-    // Форматируем дату для запроса
-    const formattedDate = window.FitApp.formatDate(date, 'yyyy-mm-dd');
-    
-    // Имитация задержки запроса
-    return new Promise(resolve => {
-        setTimeout(() => {
-            // Генерируем тестовые временные слоты
-            const workHoursStart = 9; // Начало рабочего дня
-            const workHoursEnd = 20; // Конец рабочего дня
-            const slotDuration = 60; // Длительность тренировки в минутах
+        
+        console.log('📨 Ответ сервера:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            let errorMessage = `Ошибка сервера: ${response.status}`;
             
-            const slots = [];
-            
-            // Генерируем слоты с 9 до 20 часов с интервалом в 1 час
-            for (let hour = workHoursStart; hour < workHoursEnd; hour++) {
-                const slotTime = `${String(hour).padStart(2, '0')}:00`;
-                
-                // Случайным образом определяем доступность слота
-                const isAvailable = Math.random() > 0.3; // 70% вероятность, что слот доступен
-                
-                slots.push({
-                    time: slotTime,
-                    available: isAvailable
-                });
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+                console.log('❌ Детали ошибки:', errorData);
+            } catch (e) {
+                console.log('❌ Не удалось получить детали ошибки');
             }
             
-            availableTimeSlots = slots;
-            resolve(slots);
-        }, 300);
-    });
-}
-
-/**
- * Отрисовка временных слотов
- * @param {HTMLElement} container - DOM-элемент для слотов
- * @param {Array} slots - Массив временных слотов
- */
-function renderTimeSlots(container, slots) {
-    if (slots.length === 0) {
-        container.innerHTML = '<p>Нет доступных временных слотов для выбранной даты</p>';
-        return;
+            throw new Error(errorMessage);
+        }
+        
+        const createdBooking = await response.json();
+        console.log('✅ Запись создана:', createdBooking);
+        
+        // Обновляем локальные данные
+        const trainingToBook = availableTrainings.find(training => 
+            training.trainerId === selectedTrainer.id && 
+            training.date === selectedDate &&
+            training.time === selectedTime &&
+            !training.isBooked
+        );
+        
+        if (trainingToBook) {
+            trainingToBook.isBooked = true;
+        }
+        
+        showNotification(`Запись успешно создана! Тренер: ${selectedTrainer.name}, Дата: ${selectedDate}, Время: ${selectedTime}`, 'success');
+        
+        // Обновляем UI
+        updateCalendar();
+        renderTimeSlots(selectedDate);
+        selectedTime = null;
+        updateBookingButton();
+        
+        // Обновляем данные пользователя
+        if (window.FitApp.User && window.FitApp.User.loadUserBookings) {
+            await window.FitApp.User.loadUserBookings();
+        }
+        
+    } catch (error) {
+        console.error('❌ Ошибка записи:', error);
+        showNotification(`Ошибка записи: ${error.message}`, 'error');
     }
-    
-    let html = '';
-    
-    slots.forEach(slot => {
-        const slotClass = slot.available ? 'time-slot' : 'time-slot unavailable';
-        html += `<div class="${slotClass}" data-time="${slot.time}">${slot.time}</div>`;
-    });
-    
-    container.innerHTML = html;
-    
-    // Добавляем обработчики для выбора времени
-    const timeSlotElements = container.querySelectorAll('.time-slot:not(.unavailable)');
-    timeSlotElements.forEach(slotElement => {
-        slotElement.addEventListener('click', () => {
-            // Снимаем выделение со всех слотов
-            timeSlotElements.forEach(el => el.classList.remove('selected'));
-            
-            // Выделяем выбранный слот
-            slotElement.classList.add('selected');
-            
-            // Запоминаем выбранное время
-            selectedTime = slotElement.getAttribute('data-time');
-            
-            // Проверяем возможность записи
-            checkBookingAvailability();
-        });
-    });
 }
 
 /**
- * Проверка возможности записи на тренировку
+ * Получить существующие записи пользователя
  */
-function checkBookingAvailability() {
+function getExistingBookings() {
+    try {
+        const stored = localStorage.getItem('userBookings');
+        return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+        console.error('Ошибка получения записей:', error);
+        return [];
+    }
+}
+
+/**
+ * Обновление состояния кнопки записи
+ */
+function updateBookingButton() {
     const bookBtn = document.querySelector('.book-btn');
     if (!bookBtn) return;
     
-    // Проверяем, авторизован ли пользователь
-    const token = localStorage.getItem('fitapp_token');
+    const canBook = window.FitApp.currentUser && selectedTrainer && selectedDate && selectedTime;
     
-    // Кнопка доступна только авторизованным пользователям,
-    // которые выбрали тренера, дату и время
-    bookBtn.disabled = !token || !selectedTrainer || !selectedDate || !selectedTime;
+    bookBtn.disabled = !canBook;
+    bookBtn.textContent = canBook ? 'Записаться' : 'Выберите тренера, дату и время';
 }
 
 /**
- * Обработка записи на тренировку
+ * Форматирование даты для записи
  */
-function handleBooking() {
-    if (!selectedTrainer || !selectedDate || !selectedTime) {
-        window.FitApp.showNotification('Пожалуйста, выберите тренера, дату и время тренировки', 'warning');
-        return;
-    }
-    
-    // Форматируем данные для отправки
-    const bookingData = {
-        trainerId: selectedTrainer.id,
-        date: window.FitApp.formatDate(selectedDate, 'yyyy-mm-dd'),
-        time: selectedTime
-    };
-    
-    // В реальном приложении здесь будет запрос к API
-    // Имитируем успешную запись
-    console.log('Данные для записи:', bookingData);
-    
-    // Показываем уведомление об успешной записи
-    const formattedDate = window.FitApp.formatDate(selectedDate, 'dd.mm.yyyy');
-    const message = `Вы успешно записаны на тренировку к тренеру ${selectedTrainer.name} на ${formattedDate} в ${selectedTime}!`;
-    
-    window.FitApp.showNotification(message, 'success');
-    
-    // Сбрасываем выбранные значения
-    resetBookingForm();
+function formatDateForBooking(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 /**
- * Сброс формы записи на тренировку
+ * Экспорт функций в глобальный объект
  */
-function resetBookingForm() {
-    selectedTrainer = null;
-    selectedDate = null;
-    selectedTime = null;
-    
-    // Снимаем выделение с тренеров
-    const trainerItems = document.querySelectorAll('.trainer-item');
-    trainerItems.forEach(item => item.classList.remove('selected'));
-    
-    // Снимаем выделение с дат
-    const dayElements = document.querySelectorAll('.calendar-day');
-    dayElements.forEach(day => day.classList.remove('selected'));
-    
-    // Очищаем временные слоты
-    const timeSlotsContainer = document.querySelector('.time-slots');
-    if (timeSlotsContainer) {
-        timeSlotsContainer.innerHTML = '<p>Сначала выберите дату и тренера</p>';
-    }
-    
-    // Блокируем кнопку записи
-    const bookBtn = document.querySelector('.book-btn');
-    if (bookBtn) {
-        bookBtn.disabled = true;
-    }
-}
-
-/**
- * Получение правильного склонения слова "лет"
- * @param {number} years - Количество лет
- * @returns {string} - Правильное склонение
- */
-function getYearsWord(years) {
-    const lastDigit = years % 10;
-    const lastTwoDigits = years % 100;
-    
-    if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-        return 'лет';
-    }
-    
-    if (lastDigit === 1) {
-        return 'год';
-    }
-    
-    if (lastDigit >= 2 && lastDigit <= 4) {
-        return 'года';
-    }
-    
-    return 'лет';
-}
+window.FitApp = window.FitApp || {};
+window.FitApp.Booking = {
+    initBooking,
+    loadTrainers,
+    loadTrainings,
+    selectTrainer,
+    selectDate,
+    selectTime,
+    handleBooking
+};

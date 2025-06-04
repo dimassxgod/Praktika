@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": 1749057771357,
+    "trainerId": 1,
+    "date": "2025-06-06",
+    "time": "09:00",
+    "trainerName": "Анна Петренко",
+    "userId": "8537fdff-a61d-4c93-b9d6-a5bbdb61e8e3",
+    "status": "confirmed",
+    "createdAt": "2025-06-04T17:22:51.357Z",
+    "notes": ""
+  }
+]

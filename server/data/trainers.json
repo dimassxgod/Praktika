@@ -1,1 +1,68 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Анна Петренко",
+    "specialty": "Кардіо HIIT",
+    "experience": "Досвід: 3+ років",
+    "rating": 5.0,
+    "photo": "assets/images/trainers/anna.jpg",
+    "description": "Сертифікований тренер з кардіо тренувань та HIIT програм",
+    "certifications": ["ACSM", "NASM"],
+    "specializations": ["HIIT", "Кардіо", "Функціональний тренінг"]
+  },
+  {
+    "id": 2,
+    "name": "Олексій Коваленко",
+    "specialty": "Силові тренування",
+    "experience": "Досвід: 5+ років",
+    "rating": 4.8,
+    "photo": "assets/images/trainers/alex.jpg",
+    "description": "Експерт з силових тренувань та набору м'язової маси",
+    "certifications": ["NSCA", "CSCS"],
+    "specializations": ["Силові тренування", "Пауерліфтинг", "Бодібілдинг"]
+  },
+  {
+    "id": 3,
+    "name": "Марія Іваненко",
+    "specialty": "Йога та стретчинг",
+    "experience": "Досвід: 4+ років",
+    "rating": 4.9,
+    "photo": "assets/images/trainers/maria.jpg",
+    "description": "Інструктор з йоги та розтяжки, спеціаліст з відновлення",
+    "certifications": ["RYT-200", "Yoga Alliance"],
+    "specializations": ["Хатха йога", "Віньяса", "Стретчинг", "Медитація"]
+  },
+  {
+    "id": 4,
+    "name": "Дмитро Сидоренко",
+    "specialty": "Кросфіт",
+    "experience": "Досвід: 6+ років",
+    "rating": 4.7,
+    "photo": "assets/images/trainers/dmitro.jpg",
+    "description": "Тренер з кросфіту та функціонального тренінгу",
+    "certifications": ["CrossFit Level 2", "FMS"],
+    "specializations": ["Кросфіт", "Функціональний тренінг", "Олімпійські вправи"]
+  },
+  {
+    "id": 5,
+    "name": "Катерина Мельник",
+    "specialty": "Пілатес та реабілітація",
+    "experience": "Досвід: 7+ років",
+    "rating": 5.0,
+    "photo": "assets/images/trainers/kate.jpg",
+    "description": "Спеціаліст з пілатесу та відновних програм після травм",
+    "certifications": ["BASI Pilates", "Physical Therapy"],
+    "specializations": ["Пілатес", "Реабілітація", "Корекція постави", "ЛФК"]
+  },
+  {
+    "id": 6,
+    "name": "Ігор Петров",
+    "specialty": "Бокс та єдиноборства",
+    "experience": "Досвід: 8+ років",
+    "rating": 4.6,
+    "photo": "assets/images/trainers/igor.jpg",
+    "description": "Тренер з боксу та кікбоксингу, майстер спорту",
+    "certifications": ["Boxing Coach Level 1", "Kickboxing Instructor"],
+    "specializations": ["Бокс", "Кікбоксинг", "Самооборона", "Кардіо-бокс"]
+  }
+]

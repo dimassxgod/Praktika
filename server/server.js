@@ -104,7 +104,7 @@ app.use('/assets', express.static(path.join(__dirname, '../public/assets')));
 
 // API маршруты
 app.use('/api/auth', authRoutes);
-app.use('/api/booking', authenticateToken, bookingRoutes);
+app.use('/api/bookings',  bookingRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/profile', authenticateToken, profileRoutes);
 

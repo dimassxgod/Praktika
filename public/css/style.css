@@ -1,3 +1,4 @@
+
 /* Общие стили и переменные */
 :root {
     --primary-color: #1a1363;
@@ -295,57 +296,378 @@ ul {
     color: var(--primary-color)
 }
 
-
-/* Секция записи на тренировку */
+/* Секция записи на тренировку - ОБНОВЛЕННАЯ */
 .booking {
     padding: 80px 0;
     background: url('../assets/images/section4_bg.png');
     background-size: 100%;
-    height: 800px;
+    height: auto;
+    min-height: 800px;
 }
 
 .booking-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    margin-bottom: 30px;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin: 40px 0;
 }
 
+/* Секция выбора тренера */
 .trainer-select,
 .time-select {
     background-color: white;
-    padding: 20px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .trainer-select h3,
 .time-select h3 {
-    margin-bottom: 15px;
-    font-size: 20px;
+    font-size: 24px;
+    margin-bottom: 30px;
     color: var(--primary-color);
+    text-align: center;
 }
 
-.trainers-list,
+.trainers-list {
+    display: grid;
+    gap: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Карточка тренера */
+.trainer-card {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.trainer-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.trainer-card.selected {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+}
+
+.trainer-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.trainer-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.trainer-info h4 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.trainer-specialty {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.trainer-experience {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.trainer-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.trainer-rating i {
+    color: #ffd700;
+    font-size: 14px;
+}
+
+.trainer-card.selected .trainer-rating i {
+    color: #ffd700;
+}
+
+.rating-text {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* Календарь */
 .calendar {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     min-height: 200px;
 }
 
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.calendar-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.calendar-nav {
+    background: none;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--primary-color);
+    font-size: 16px;
+}
+
+.calendar-nav:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.calendar-grid {
+    margin-bottom: 30px;
+}
+
+.calendar-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.day-header {
+    text-align: center;
+    font-weight: 600;
+    color: var(--gray-color);
+    padding: 10px 5px;
+    font-size: 14px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.calendar-day.empty {
+    cursor: default;
+}
+
+.calendar-day:not(.empty):not(.past) {
+    background: var(--light-color);
+}
+
+.calendar-day:not(.empty):not(.past):hover {
+    background: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.calendar-day.today {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+.calendar-day.selected {
+    background: var(--secondary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.calendar-day.past {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.calendar-day.has-trainings::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: #4CAF50;
+    border-radius: 50%;
+}
+
+.calendar-day.selected.has-trainings::after {
+    background: white;
+}
+
+.calendar-day.no-trainings {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Временные слоты */
+.time-slots h4 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.time-slot {
+    padding: 12px 16px;
+    border: 2px solid var(--light-color);
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    text-align: center;
+}
+
+.time-slot:hover {
+    border-color: var(--primary-color);
+    background: var(--light-color);
+}
+
+.time-slot.selected {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* Действие записи */
 .booking-action {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 40px;
 }
+
+.book-btn {
+    padding: 15px 40px;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    display: block;
+    margin: 0 auto 20px;
+}
+
+.book-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(26, 19, 99, 0.4);
+}
+
+.book-btn:disabled {
+    background: var(--gray-color);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .booking-action a{
-    color: rgb(41, 58, 211);
+    color: var(--primary-color);
 }
+
 .booking-action a:hover{
-    color: rgb(61, 78, 232);
+    color: var(--nav-color);
 }
 
 .login-notice {
     margin-top: 10px;
     font-size: 14px;
     color: var(--light-color);
+}
+
+.login-notice a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-notice a:hover {
+    text-decoration: underline;
+}
+
+/* Скроллбар для списка тренеров */
+.trainers-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.trainers-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.trainers-list::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.trainers-list::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+/* Анимации загрузки */
+.loading-placeholder {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 8px;
+    height: 20px;
+    margin: 10px 0;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 /* Секция популярных упражнений */
@@ -466,29 +788,6 @@ ul {
     font-size: 14px;
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-    .main-nav {
-        display: none;
-    }
-
-    .mobile-menu-btn {
-        display: block;
-    }
-
-    .hero-content h2 {
-        font-size: 32px;
-    }
-
-    .hero-content p {
-        font-size: 16px;
-    }
-
-    .section-title {
-        font-size: 28px;
-    }
-}
-
 /* Стили для страницы авторизации */
 .auth-container {
     max-width: 500px;
@@ -579,18 +878,6 @@ ul {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
     margin-top: 40px;
-}
-
-.trainer-card {
-    background-color: white;
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: transform 0.3s ease;
-}
-
-.trainer-card:hover {
-    transform: translateY(-5px);
 }
 
 .trainer-img {
@@ -792,23 +1079,6 @@ ul {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-}
-
-@media (max-width: 600px) {
-    .calculator-form {
-        grid-template-columns: 1fr;
-    }
-
-    .exercise-details {
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .exercise-gif {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 20px;
-    }
 }
 
 /* Стили для профиля пользователя */
