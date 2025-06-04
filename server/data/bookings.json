@@ -9,5 +9,27 @@
     "status": "confirmed",
     "createdAt": "2025-06-04T17:22:51.357Z",
     "notes": ""
+  },
+  {
+    "id": 1749060376904,
+    "trainerId": 2,
+    "date": "2025-06-06",
+    "time": "15:00",
+    "trainerName": "Олексій Коваленко",
+    "userId": "8537fdff-a61d-4c93-b9d6-a5bbdb61e8e3",
+    "status": "confirmed",
+    "createdAt": "2025-06-04T18:06:16.904Z",
+    "notes": ""
+  },
+  {
+    "id": 1749060801682,
+    "trainerId": 4,
+    "date": "2025-06-06",
+    "time": "19:30",
+    "trainerName": "Дмитро Сидоренко",
+    "userId": "8537fdff-a61d-4c93-b9d6-a5bbdb61e8e3",
+    "status": "confirmed",
+    "createdAt": "2025-06-04T18:13:21.682Z",
+    "notes": ""
   }
 ]

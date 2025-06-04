@@ -8,6 +8,139 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;1,200&display=swap" rel="stylesheet">
   <title>Профиль пользователя</title>
   <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* Стили для отображения тренировок */
+    .booking-item {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .booking-item:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transform: translateY(-1px);
+    }
+
+    .booking-info {
+        flex: 1;
+    }
+
+    .booking-main {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .booking-main strong {
+        color: #2c3e50;
+        font-size: 16px;
+    }
+
+    .booking-date {
+        color: #7f8c8d;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .booking-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+    }
+
+    .booking-type {
+        color: #34495e;
+        background: #ecf0f1;
+        padding: 2px 8px;
+        border-radius: 12px;
+    }
+
+    .booking-status {
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-weight: 500;
+        font-size: 12px;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-confirmed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-completed {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .booking-actions {
+        margin-left: 15px;
+    }
+
+    .btn-small {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-cancel:hover {
+        background: #c82333;
+    }
+
+    .no-bookings, .error {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+        padding: 20px;
+    }
+
+    .error {
+        color: #dc3545;
+    }
+
+    @media (max-width: 768px) {
+        .booking-item {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .booking-main {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .booking-actions {
+            margin-left: 0;
+            margin-top: 10px;
+            text-align: right;
+        }
+    }
+  </style>
 </head>
 <body>
     <header class="main-header">
@@ -50,7 +183,7 @@
 
     <!-- Блок тренировок -->
     <section class="profile-card workout-card">
-      <h2>📅 Найближчи тренування</h2>
+      <h2>📅 Найближчі тренування</h2>
       <ul id="workout-list" class="profile-list">
         <li>Завантаження...</li>
       </ul>
@@ -71,7 +204,7 @@
       <ul class="profile-list">
         <li>4-5 прийомів їжі</li>
         <li>Пити минімум 2 літра води в день</li>
-        <li>Додати білок до кожного прийому їжі</li>
+        <li>Додати бєлок в кажного прийому їжі</li>
       </ul>
     </section>
   </main>
@@ -89,7 +222,7 @@
                         <li><a href="/">Головна</a></li>
                         <li><a href="/trainers">Тренери</a></li>
                         <li><a href="/exercises">Вправи</a></li>
-                        <li><a href="/nutrition">Харчування</a></li>
+                        <li><a href="/nutrition">Харчування</li>
                     </ul>
                 </div>
                 <div class="footer-contact">
@@ -109,7 +242,6 @@
             </div>
         </div>
     </footer>
-
 
   <script src="../js/main.js"></script>
   <script src="../js/profile.js"></script>

@@ -563,6 +563,58 @@ function formatDateForBooking(date) {
     return `${year}-${month}-${day}`;
 }
 
+function saveBookingToProfile(formData, trainerData) {
+    const bookingData = {
+        id: Date.now().toString(), // Генерируем уникальный ID
+        date: formData.get('date'),
+        time: formData.get('time'),
+        trainerName: trainerData.name,
+        workoutType: formData.get('workout-type') || 'Персональна тренування',
+        status: 'confirmed',
+        createdAt: new Date().toISOString()
+    };
+    
+    // Получаем существующие записи
+    const existingBookings = localStorage.getItem('userBookings');
+    let bookings = existingBookings ? JSON.parse(existingBookings) : [];
+    
+    // Добавляем новую запись
+    bookings.push(bookingData);
+    
+    // Сохраняем обратно в localStorage
+    localStorage.setItem('userBookings', JSON.stringify(bookings));
+    
+    console.log('Запись сохранена в профиль:', bookingData);
+}
+
+function onBookingSuccess(bookingResponse, formData, trainerInfo) {
+    // Сохраняем в профиль
+    saveBookingToProfile(formData, trainerInfo);
+    
+    // Показываем уведомление
+    if (typeof FitApp !== 'undefined' && FitApp.showNotification) {
+        FitApp.showNotification('Ви успішно записалися на тренування!', 'success');
+    } else {
+        alert('Ви успішно записалися на тренування!');
+    }
+}
+
+// Функция для очистки старых записей (опционально)
+function cleanOldBookings() {
+    const bookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
+    const now = new Date();
+    
+    // Удаляем записи старше 30 дней
+    const filteredBookings = bookings.filter(booking => {
+        const bookingDate = new Date(booking.date);
+        const diffTime = now - bookingDate;
+        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+        return diffDays <= 30;
+    });
+    
+    localStorage.setItem('userBookings', JSON.stringify(filteredBookings));
+}
+
 /**
  * Экспорт функций в глобальный объект
  */
