@@ -77,7 +77,7 @@ app.use(helmet({
 // Rate limiting
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 минут
-    max: 100, // максимум 100 запросов с одного IP
+    max: 1000000, // максимум 100 запросов с одного IP
     message: {
         error: 'Слишком много запросов с этого IP, попробуйте позже.'
     }
