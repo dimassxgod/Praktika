@@ -13,15 +13,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Обработчик кнопки выхода
     const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-            FitApp.logout();
-        });
-    }
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', function() {
+        FitApp.logout();
+    });
+}
+
     
     // Загрузка данных пользователя и тренировок
     loadUserData();
     loadUserBookings();
+
+        const cancelBtn = document.getElementById('cancel-btn');
+if (cancelBtn) {
+    cancelBtn.addEventListener('click', function() {
+        localStorage.removeItem('userBookings');
+        loadUserBookings();
+    });
+}
 });
 
 async function loadUserData() {
@@ -91,6 +100,9 @@ async function loadUserBookings() {
                     <span class="trainer-name">${booking.trainerName}</span>
                     <span class="booking-status">${getStatusText(booking.status)}</span>
                 </div>
+             ${booking.status === 'confirmed' || booking.status === 'pending' ? 
+                    `<button class="cancel-btn" id="cancel-btn" onclick="FitApp.User.cancelBooking('${booking.id}')">Скасувати</button>` : 
+                    ''}
             `;
             
             workoutList.appendChild(bookingItem);
@@ -157,22 +169,20 @@ async function cancelBooking(bookingId) {
             console.log('API недоступно, отменяем локально');
         }
         
-        // В любом случае обновляем локальные данные
+        // Обновляем локальные данные (не удаляя весь localStorage!)
         const localBookings = localStorage.getItem('userBookings');
         if (localBookings) {
             const bookings = JSON.parse(localBookings);
             const updatedBookings = bookings.map(booking => 
                 booking.id === bookingId 
-                    ? { ...booking, status: 'cancelled' }
+                    ? { ...booking, status: 'cancelled' }  // Помечаем как "cancelled"
                     : booking
             );
             localStorage.setItem('userBookings', JSON.stringify(updatedBookings));
         }
         
-        // Перезагружаем список тренировок
-        setTimeout(() => {
-            loadUserBookings();
-        }, 1000);
+        // Перезагружаем список
+        loadUserBookings();
         
     } catch (error) {
         console.error('Ошибка отмены записи:', error);
