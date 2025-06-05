@@ -83,11 +83,6 @@ function renderTrainers() {
     trainersList.innerHTML = trainers.map(trainer => `
         <div class="trainer-card ${selectedTrainer?.id === trainer.id ? 'selected' : ''}" 
              data-trainer-id="${trainer.id}">
-            <div class="trainer-avatar">
-                <img src="${trainer.photo || 'assets/images/trainers/default.jpg'}" 
-                     alt="${trainer.name}"
-                     onerror="this.src='assets/images/trainers/default.jpg'">
-            </div>
             <div class="trainer-info">
                 <h4>${trainer.name}</h4>
                 <p class="trainer-specialty">${trainer.specialty || 'Фітнес-тренер'}</p>
@@ -508,7 +503,7 @@ async function handleBooking() {
             trainingToBook.isBooked = true;
         }
         
-        showNotification(`Запись успешно создана! Тренер: ${selectedTrainer.name}, Дата: ${selectedDate}, Время: ${selectedTime}`, 'success');
+        showNotification(`Запис успішно створений! Тренер: ${selectedTrainer.name}, Дата: ${selectedDate}, Час: ${selectedTime}`, 'success');
         
         // Обновляем UI
         updateCalendar();

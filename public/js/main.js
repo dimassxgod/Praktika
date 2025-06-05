@@ -185,8 +185,6 @@ function handleBookingClick() {
         return;
     }
     
-    // Логика записи на тренировку
-    showNotification('Функция записи в разработке', 'info');
 }
 
 /**

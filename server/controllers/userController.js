@@ -204,7 +204,7 @@ const loginUser = async (req, res) => {
         const user = await userDB.getUserByEmail(email);
         if (!user) {
             return res.status(401).json({ 
-                message: 'Неверный email или пароль' 
+                message: 'Неправильний email чи пароль' 
             });
         }
 
@@ -218,7 +218,7 @@ const loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ 
-                message: 'Неверный email или пароль' 
+                message: 'Неправильний email чи пароль' 
             });
         }
 

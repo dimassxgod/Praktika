@@ -230,7 +230,7 @@ async function login(req, res) {
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: 'Неверный email или пароль'
+                message: 'Неправильний email чи пароль'
             });
         }
         
@@ -247,7 +247,7 @@ async function login(req, res) {
         if (!isPasswordValid) {
             return res.status(401).json({
                 success: false,
-                message: 'Неверный email или пароль'
+                message: 'Неправильний email чи пароль'
             });
         }
         
