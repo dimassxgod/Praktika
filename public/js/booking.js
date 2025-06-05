@@ -447,8 +447,6 @@ async function handleBooking() {
             notes: ''
         };
         
-        console.log('📝 Данные для записи:', bookingData);
-        
         // Подготавливаем заголовки с токеном
         const headers = {
             'Content-Type': 'application/json'
@@ -488,8 +486,25 @@ async function handleBooking() {
             throw new Error(errorMessage);
         }
         
-        const createdBooking = await response.json();
-        console.log('✅ Запись создана:', createdBooking);
+        if (response.ok) {
+            const createdBooking = await response.json();
+            
+            // Добавляем эту строку для сохранения в localStorage
+            if (window.FitApp.User && window.FitApp.User.addBookingToProfile) {
+                window.FitApp.User.addBookingToProfile(createdBooking);
+            } else {
+                // Fallback если User модуль не загружен
+                const bookingForProfile = {
+                    id: createdBooking.id || Date.now().toString(),
+                    date: createdBooking.date,
+                    time: createdBooking.time,
+                    trainerName: createdBooking.trainerName,
+                    workoutType: 'Персональна тренування',
+                    status: 'confirmed'
+                };
+                saveBookingToProfile(bookingForProfile);
+            }
+        }
         
         // Обновляем локальные данные
         const trainingToBook = availableTrainings.find(training => 
@@ -558,28 +573,34 @@ function formatDateForBooking(date) {
     return `${year}-${month}-${day}`;
 }
 
-function saveBookingToProfile(formData, trainerData) {
-    const bookingData = {
-        id: Date.now().toString(), // Генерируем уникальный ID
-        date: formData.get('date'),
-        time: formData.get('time'),
-        trainerName: trainerData.name,
-        workoutType: formData.get('workout-type') || 'Персональна тренування',
-        status: 'confirmed',
-        createdAt: new Date().toISOString()
-    };
-    
-    // Получаем существующие записи
-    const existingBookings = localStorage.getItem('userBookings');
-    let bookings = existingBookings ? JSON.parse(existingBookings) : [];
-    
-    // Добавляем новую запись
-    bookings.push(bookingData);
-    
-    // Сохраняем обратно в localStorage
-    localStorage.setItem('userBookings', JSON.stringify(bookings));
-    
-    console.log('Запись сохранена в профиль:', bookingData);
+function saveBookingToProfile(bookingData) {
+    try {
+        const existingBookings = localStorage.getItem('userBookings');
+        let bookings = existingBookings ? JSON.parse(existingBookings) : [];
+        
+        // Проверяем, нет ли уже такой записи
+        const isDuplicate = bookings.some(booking => 
+            booking.date === bookingData.date && 
+            booking.time === bookingData.time && 
+            booking.trainerName === bookingData.trainerName
+        );
+        
+        if (!isDuplicate) {
+            bookings.push({
+                id: bookingData.id || Date.now().toString(),
+                date: bookingData.date,
+                time: bookingData.time,
+                trainerName: bookingData.trainerName,
+                workoutType: bookingData.workoutType || 'Персональна тренування',
+                status: bookingData.status || 'confirmed'
+            });
+            
+            localStorage.setItem('userBookings', JSON.stringify(bookings));
+            console.log('Бронирование сохранено в localStorage');
+        }
+    } catch (error) {
+        console.error('Ошибка сохранения бронирования:', error);
+    }
 }
 
 function onBookingSuccess(bookingResponse, formData, trainerInfo) {

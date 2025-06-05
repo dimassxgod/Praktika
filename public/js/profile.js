@@ -1,3 +1,12 @@
+// Добавляем функции в глобальный объект FitApp
+window.FitApp = window.FitApp || {};
+window.FitApp.User = {
+    loadUserData,
+    loadUserBookings,
+    cancelBooking,
+    addBookingToProfile
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     // Проверка авторизации при загрузке страницы
     FitApp.checkAuth();
@@ -45,85 +54,46 @@ async function loadUserData() {
 
 async function loadUserBookings() {
     const workoutList = document.getElementById('workout-list');
+    if (!workoutList) return;
     
     try {
-        // Показываем индикатор загрузки
         workoutList.innerHTML = '<li>Завантаження тренувань...</li>';
         
         let bookings = [];
-        
-        // Сначала пытаемся загрузить из localStorage (локальные данные)
         const localBookings = localStorage.getItem('userBookings');
-        if (localBookings) {
-            bookings = JSON.parse(localBookings);
-        } else {
-            // Если локальных данных нет, пытаемся загрузить с API
-            try {
-                const response = await FitApp.fetchWithAuth(`${FitApp.apiBaseUrl}/bookings/my`);
-                if (response.ok) {
-                    bookings = await response.json();
-                }
-            } catch (apiError) {
-                console.log('API недоступно, используем локальные данные');
-                // Если API недоступно, можно использовать демо-данные или пустой массив
-                bookings = [];
-            }
-        }
         
-        // Очищаем список
+
+            if (localBookings) {
+                bookings = JSON.parse(localBookings);
+            }
+        
+        // Если все еще нет данных, используем пустой массив
+        if (!bookings) bookings = [];
+        
         workoutList.innerHTML = '';
         
-        if (!bookings || bookings.length === 0) {
+        if (bookings.length === 0) {
             workoutList.innerHTML = '<li class="no-bookings">У вас поки немає записів на тренування</li>';
             return;
         }
         
-        // Фильтруем и сортируем предстоящие тренировки
-        const upcomingBookings = bookings
-            .filter(booking => {
-                const bookingDate = new Date(booking.date + 'T' + booking.time);
-                return bookingDate > new Date() && booking.status !== 'cancelled';
-            })
-            .sort((a, b) => {
-                const dateA = new Date(a.date + 'T' + a.time);
-                const dateB = new Date(b.date + 'T' + b.time);
-                return dateA - dateB;
-            })
-            .slice(0, 5); // Показываем только ближайшие 5 тренировок
-        
-        if (upcomingBookings.length === 0) {
-            workoutList.innerHTML = '<li class="no-bookings">Немає найближчих тренувань</li>';
-            return;
-        }
-        
-        // Отображаем тренировки
-        upcomingBookings.forEach(booking => {
-            const listItem = document.createElement('li');
-            listItem.className = 'booking-item';
+        // Рендеринг списка тренировок
+        bookings.forEach(booking => {
+            const bookingDate = new Date(booking.date);
+            const bookingItem = document.createElement('li');
+            bookingItem.className = `booking-item ${booking.status}`;
             
-            const bookingDate = new Date(booking.date + 'T' + booking.time);
-            const formattedDate = formatBookingDate(bookingDate);
-            const formattedTime = formatBookingTime(booking.time);
-            
-            listItem.innerHTML = `
+            bookingItem.innerHTML = `
                 <div class="booking-info">
-                    <div class="booking-main">
-                        <strong>${booking.trainerName || 'Тренер не указан'}</strong>
-                        <span class="booking-date">${formattedDate} о ${formattedTime}</span>
-                    </div>
-                    <div class="booking-details">
-                        <span class="booking-type">${booking.workoutType || 'Персональна тренування'}</span>
-                        <span class="booking-status status-${booking.status}">${getStatusText(booking.status)}</span>
-                    </div>
-                </div>
-                <div class="booking-actions">
-                    <button class="btn-small btn-cancel" onclick="cancelBooking('${booking.id}')">
-                        Скасувати
-                    </button>
+                    <span class="workout-date">${formatBookingDate(bookingDate)}</span>
+                    <span class="workout-time">${formatBookingTime(booking.time)}</span><br>
+                    <span class="workout-type">${booking.workoutType}</span><br>
+                    <span class="trainer-name">${booking.trainerName}</span>
+                    <span class="booking-status">${getStatusText(booking.status)}</span>
                 </div>
             `;
             
-            workoutList.appendChild(listItem);
+            workoutList.appendChild(bookingItem);
         });
         
     } catch (error) {
