@@ -408,7 +408,7 @@ const changePassword = async (req, res) => {
         const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
         if (!isCurrentPasswordValid) {
             return res.status(400).json({ 
-                message: 'Неверный текущий пароль',
+                message: 'Невірний поточний пароль',
                 success: false 
             });
         }

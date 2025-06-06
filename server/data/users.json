@@ -8,15 +8,5 @@
     "createdAt": "2025-06-03T16:49:11.416Z",
     "updatedAt": "2025-06-03T16:49:11.416Z",
     "role": "user"
-  },
-  {
-    "id": "8537fdff-a61d-4c93-b9d6-a5bbdb61e8e3",
-    "name": "Pinos Parker",
-    "email": "pinosparker@gmail.com",
-    "phone": "+380912312931",
-    "password": "$2a$10$UaH1KfC41exRNCqld.41Oep8EbZwnUzGC1gvGiZe9pMNU1QFW6qgO",
-    "createdAt": "2025-06-03T16:56:46.217Z",
-    "updatedAt": "2025-06-03T16:56:46.217Z",
-    "role": "user"
   }
 ]

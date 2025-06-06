@@ -113,7 +113,7 @@ async function checkAuth() {
                 currentUser = userData.user || userData;
                 updateUIForLoggedInUser(currentUser);
             } else {
-                throw new Error('Ошибка авторизации');
+                throw new Error('Помилка авторизації');
             }
         } catch (error) {
             console.error('Ошибка проверки авторизации:', error);
@@ -181,7 +181,7 @@ function updateUIForLoggedOutUser() {
  */
 function handleBookingClick() {
     if (!currentUser) {
-        showNotification('Необходимо войти в систему', 'warning');
+        showNotification('Необхідно увійти в систему', 'warning');
         return;
     }
     
@@ -238,7 +238,7 @@ function renderPopularExercises(exercises) {
 function logout() {
     localStorage.removeItem('fitapp_token');
     currentUser = null;
-    showNotification('Вы вышли из системы', 'success');
+    showNotification('Ви вийшли із системи', 'success');
     
     // Обновляем UI
     updateUIForLoggedOutUser();

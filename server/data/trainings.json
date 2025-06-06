@@ -11,6 +11,17 @@
     "currentParticipants": 0
   },
   {
+    "id": 1,
+    "trainerId": 1,
+    "date": "2025-06-06",
+    "time": "17:00",
+    "isBooked": false,
+    "duration": 60,
+    "type": "group",
+    "maxParticipants": 8,
+    "currentParticipants": 0
+  },
+  {
     "id": 2,
     "trainerId": 1,
     "date": "2025-06-05",
@@ -33,10 +44,43 @@
     "currentParticipants": 5
   },
   {
+    "id": 1,
+    "trainerId": 1,
+    "date": "2025-06-05",
+    "time": "09:00",
+    "isBooked": false,
+    "duration": 60,
+    "type": "group",
+    "maxParticipants": 8,
+    "currentParticipants": 0
+  },
+  {
+    "id": 2,
+    "trainerId": 2,
+    "date": "2025-06-06",
+    "time": "10:30",
+    "isBooked": false,
+    "duration": 60,
+    "type": "group",
+    "maxParticipants": 8,
+    "currentParticipants": 2
+  },
+  {
+    "id": 3,
+    "trainerId": 2,
+    "date": "2025-06-06",
+    "time": "17:00",
+    "isBooked": false,
+    "duration": 60,
+    "type": "group",
+    "maxParticipants": 8,
+    "currentParticipants": 5
+  },
+  {
     "id": 4,
     "trainerId": 2,
-    "date": "2025-06-05",
-    "time": "08:00",
+    "date": "2025-06-06",
+    "time": "19:00",
     "isBooked": false,
     "duration": 90,
     "type": "personal",

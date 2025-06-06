@@ -20,14 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
                 
                 if (!response.ok) {
-                    throw new Error(data.error || 'Ошибка входа');
+                    throw new Error(data.error || 'Помилка входу');
                 }
                 
                 // Сохраняем токен в localStorage
                 localStorage.setItem('fitapp_token', data.token);
                 
                 // Показываем уведомление и перенаправляем
-                FitApp.showNotification('Успешный вход в систему', 'success');
+                FitApp.showNotification('Успішний вхід у систему', 'success');
                 setTimeout(() => {
                     window.location.href = '/profile';
                 }, 1500);
@@ -54,12 +54,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Валидация
             if (!agreeTerms) {
-                document.getElementById('agreeTermsError').textContent = 'Необходимо принять условия использования';
+                document.getElementById('agreeTermsError').textContent = 'Необхідно прийняти умови використання';
                 return;
             }
             
             if (password !== passwordConfirm) {
-                document.getElementById('registerPasswordConfirmError').textContent = 'Пароли не совпадают';
+                document.getElementById('registerPasswordConfirmError').textContent = 'Паролі не збігаються';
                 return;
             }
             
@@ -75,14 +75,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
                 
                 if (!response.ok) {
-                    throw new Error(data.error || 'Ошибка регистрации');
+                    throw new Error(data.error || 'Помилка реєстрації');
                 }
                 
                 // Сохраняем токен в localStorage
                 localStorage.setItem('fitapp_token', data.token);
                 
                 // Показываем уведомление и перенаправляем
-                FitApp.showNotification('Регистрация прошла успешно!', 'success');
+                FitApp.showNotification('Реєстрація пройшла успішно!', 'success');
                 setTimeout(() => {
                     window.location.href = '/profile';
                 }, 1500);

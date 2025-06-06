@@ -83,7 +83,7 @@ router.post('/login', async (req, res) => {
 
         // Валидация
         if (!email || !password) {
-            return res.status(400).json({ error: 'Пожалуйста, укажите email и пароль' });
+            return res.status(400).json({ error: 'Будь ласка, вкажіть email і пароль' });
         }
 
         // Поиск пользователя
@@ -91,13 +91,13 @@ router.post('/login', async (req, res) => {
         const user = users.find(user => user.email === email);
 
         if (!user) {
-            return res.status(401).json({ error: 'Неверный email или пароль' });
+            return res.status(401).json({ error: 'Неправильний email або пароль' });
         }
 
         // Проверка пароля
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Неверный email или пароль' });
+            return res.status(401).json({ error: 'Неправильний email або пароль' });
         }
 
         // Создание JWT токена
@@ -108,7 +108,7 @@ router.post('/login', async (req, res) => {
         );
 
         res.json({
-            message: 'Успешный вход в систему',
+            message: 'Успішний вхід у систему',
             token,
             user: {
                 id: user.id,
