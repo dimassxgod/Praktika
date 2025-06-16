@@ -55,17 +55,6 @@
     "currentParticipants": 0
   },
   {
-    "id": 2,
-    "trainerId": 2,
-    "date": "2025-06-06",
-    "time": "10:30",
-    "isBooked": false,
-    "duration": 60,
-    "type": "group",
-    "maxParticipants": 8,
-    "currentParticipants": 2
-  },
-  {
     "id": 3,
     "trainerId": 2,
     "date": "2025-06-06",

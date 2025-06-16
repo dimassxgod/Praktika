@@ -8,5 +8,15 @@
     "createdAt": "2025-06-03T16:49:11.416Z",
     "updatedAt": "2025-06-03T16:49:11.416Z",
     "role": "user"
+  },
+  {
+    "id": "29e96c6a-ae1d-421a-a34e-5e978aae9f72",
+    "name": "Ivan Apostol",
+    "email": "ivan.apostol@nure.ua",
+    "phone": "+380994611626",
+    "password": "$2a$10$qFvTL/zN7WcXC1Zux8K3gOvyAcg.WwL.4CidlYGTRHzDsMn8BFXK2",
+    "createdAt": "2025-06-06T08:54:15.616Z",
+    "updatedAt": "2025-06-06T08:54:15.616Z",
+    "role": "user"
   }
 ]

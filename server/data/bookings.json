@@ -22,14 +22,25 @@
     "notes": ""
   },
   {
-    "id": 1749060801682,
-    "trainerId": 4,
+    "id": 1749200078437,
+    "trainerId": 2,
     "date": "2025-06-06",
-    "time": "19:30",
-    "trainerName": "Дмитро Сидоренко",
-    "userId": "8537fdff-a61d-4c93-b9d6-a5bbdb61e8e3",
+    "time": "17:00",
+    "trainerName": "Олексій Коваленко",
+    "userId": "29e96c6a-ae1d-421a-a34e-5e978aae9f72",
     "status": "confirmed",
-    "createdAt": "2025-06-04T18:13:21.682Z",
+    "createdAt": "2025-06-06T08:54:38.437Z",
+    "notes": ""
+  },
+  {
+    "id": 1749208764331,
+    "trainerId": 2,
+    "date": "2025-06-06",
+    "time": "17:00",
+    "trainerName": "Олексій Коваленко",
+    "userId": "29e96c6a-ae1d-421a-a34e-5e978aae9f72",
+    "status": "confirmed",
+    "createdAt": "2025-06-06T11:19:24.331Z",
     "notes": ""
   }
 ]
